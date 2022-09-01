@@ -4,36 +4,138 @@ import java_cup.runtime.*;
 
 class Parser;
 
+action code {:
+  private boolean logmsg = false;
+:};
+
+parser code {:
+  //Override del metodo que reporta errores sintacticos
+  public void syntax_error(Symbol cur_token){
+    report_error("Error sintactico - ( Linea: " + (cur_token.left + 1) + " Columna: " + cur_token.right + " )\n",null);
+    //TODO: Mirar porque esto no anda
+    //System.out.println("----------" + cur_token.value); }
+  }
+
+  //https://www.cs.princeton.edu/~appel/modern/java/CUP/manual.html#errors
+  public void report_fatal_error(String message, Object info) throws Exception{
+    done_parsing();
+    //TODO: Esto podria ser una CompilerException
+    throw new Exception("Error sintactico, finalizando programa\n");
+  }
+:};
 
 // Terminals
-terminal ASSIG;
-terminal PLUS;
-terminal SUB;
-terminal MULT;
-terminal DIV;
-terminal OPEN_BRACKET;
-terminal CLOSE_BRACKET;
-terminal INTEGER_CONSTANT;
-terminal IDENTIFIER;
+terminal T_ID;
+terminal T_OR;
+terminal T_AND;
+terminal T_NOT;
+terminal T_SUM;
+terminal T_RES;
+terminal T_MUL;
+terminal T_DIV;
+terminal T_ASIG;
+terminal T_COMA;
+terminal T_DOSP;
+terminal T_PARA;
+terminal T_PARC;
+terminal T_LLAVA;
+terminal T_LLAVC;
+terminal T_MAYOR;
+terminal T_MENOR;
+terminal T_CINT;
+terminal T_CFLOAT;
+terminal T_CSTRING;
+terminal T_PRIF;
+terminal T_PRINT;
+terminal T_PRELSE;
+terminal T_PRINIT;
+terminal T_PRREAD;
+terminal T_PRWRITE;
+terminal T_PRWHILE;
+terminal T_PRFLOAT;
+terminal T_PRSTRING;
 
 // Non Terminals
-non terminal sentence;
-non terminal assignment;
-non terminal expression;
-non terminal term;
+non terminal programa;
+non terminal sentencia;
+non terminal declaracion;
+non terminal asignacion;
+non terminal seleccion;
+non terminal iteracion;
+non terminal expresion;
+non terminal condicion;
+non terminal termino;
 non terminal factor;
+non terminal opcomp;
+non terminal oplog;
+non terminal decvar;
+non terminal entrada;
+non terminal salida;
+non terminal tipodato;
+non terminal listavar;
 
 // Start Symbol Definition
-start with sentence;
+start with programa;
 
-sentence ::= assignment {: System.out.println("End"); :};
-assignment ::= IDENTIFIER ASSIG expression {: System.out.println("Assignment"); :};
-expression ::= expression PLUS term {: System.out.println("+"); :};
-expression ::= expression SUB term {: System.out.println("-"); :};
-expression ::= term {: System.out.println("Expression = Term"); :};
-term ::= term MULT factor {: System.out.println("*"); :};
-term ::= term DIV factor {: System.out.println("/"); :};
-term ::= factor {: System.out.println("Term = factor"); :};
-factor ::= IDENTIFIER:id  {: System.out.println("Id: " + id); :};
-factor ::= INTEGER_CONSTANT:constant {: System.out.println("Constant: " + constant ); :};
-factor ::= OPEN_BRACKET expression CLOSE_BRACKET {: System.out.println("Factor = (Expression)"); :};
+programa ::= sentencia;
+programa ::= programa sentencia;
+
+sentencia ::= declaracion;
+sentencia ::= asignacion;
+sentencia ::= seleccion;
+sentencia ::= iteracion;
+sentencia ::= expresion;
+sentencia ::= entrada;
+sentencia ::= salida;
+
+seleccion ::= T_PRIF T_PARA condicion T_PARC T_LLAVA T_LLAVC                                            {: if(logmsg){ System.out.println("seleccion vacia "); } :};
+seleccion ::= T_PRIF T_PARA condicion T_PARC T_LLAVA programa T_LLAVC                                   {: if(logmsg){ System.out.println("seleccion"); } :};
+seleccion ::= T_PRIF T_PARA condicion T_PARC T_LLAVA programa T_LLAVC T_PRELSE T_LLAVA T_LLAVC          {: if(logmsg){ System.out.println("seleccion con else vacio"); } :};
+seleccion ::= T_PRIF T_PARA condicion T_PARC T_LLAVA programa T_LLAVC T_PRELSE T_LLAVA programa T_LLAVC {: if(logmsg){ System.out.println("seleccion con else"); } :};
+
+iteracion ::= T_PRWHILE T_PARA condicion T_PARC T_LLAVA T_LLAVC           {: if(logmsg){ System.out.println("iteracion vacia"); } :};
+iteracion ::= T_PRWHILE T_PARA condicion T_PARC T_LLAVA programa T_LLAVC  {: if(logmsg){ System.out.println("iteracion"); } :};
+
+condicion ::= T_ID opcomp T_ID                        {: if(logmsg){ System.out.println("condicion simple"); } :};
+condicion ::= T_NOT T_ID opcomp T_ID                  {: if(logmsg){ System.out.println("condicion negada"); } :};
+condicion ::= T_ID opcomp T_ID oplog T_ID opcomp T_ID {: if(logmsg){ System.out.println("condicion multiple"); } :};
+
+asignacion ::= T_ID T_ASIG T_CFLOAT   {: if(logmsg){ System.out.println("asignacion id - cfloat"); } :};
+asignacion ::= T_ID T_ASIG T_CSTRING  {: if(logmsg){ System.out.println("asignacion id - cstring"); } :};
+asignacion ::= T_ID T_ASIG expresion  {: if(logmsg){ System.out.println("asignacion id - expresion"); } :};
+
+expresion ::= termino                 {: if(logmsg){ System.out.println("expresion = termino"); } :};
+expresion ::= expresion T_SUM termino {: if(logmsg){ System.out.println("+"); } :};
+expresion ::= expresion T_RES termino {: if(logmsg){ System.out.println("-"); } :};
+termino ::= factor                    {: if(logmsg){ System.out.println("Term = factor"); } :};
+termino ::= termino T_MUL factor      {: if(logmsg){ System.out.println("*"); } :};
+termino ::= termino T_DIV factor      {: if(logmsg){ System.out.println("/"); } :};
+factor ::= T_ID:val                   {: if(logmsg){ System.out.println("Id: " + val); } :};
+factor ::= T_CINT:val                 {: if(logmsg){ System.out.println("cint: " + val ); } :};
+factor ::= T_PARA expresion T_PARC    {: if(logmsg){ System.out.println("factor = (expresion)"); } :};
+
+//TODO: Mirar si esto esta bien ( porque ni el lexico ni el sintactico saben el tipo de dato de una variable )
+entrada ::= T_PRREAD T_PARA T_ID T_PARC;
+
+//TODO: Mirar si esto esta bien ( porque ni el lexico ni el sintactico saben el tipo de dato de una variable )
+salida ::= T_PRWRITE T_PARA T_ID T_PARC;
+salida ::= T_PRWRITE T_PARA T_CSTRING T_PARC;
+
+//bloque de declaracion de variables
+declaracion ::= T_PRINIT T_LLAVA decvar T_LLAVC;
+
+decvar ::= listavar;
+decvar ::= decvar listavar;
+
+listavar ::= T_ID T_DOSP tipodato;
+listavar ::= T_ID T_COMA listavar;
+
+tipodato ::= T_PRINT;
+tipodato ::= T_PRFLOAT;
+tipodato ::= T_PRSTRING;
+
+oplog ::= T_OR  {: if(logmsg){ System.out.println("or"); } :};
+oplog ::= T_AND {: if(logmsg){ System.out.println("and"); } :};
+
+opcomp ::= T_MAYOR {: if(logmsg){ System.out.println("mayor"); } :};
+opcomp ::= T_MENOR {: if(logmsg){ System.out.println("menor"); } :};

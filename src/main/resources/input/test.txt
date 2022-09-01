@@ -1,1 +1,77 @@
+/* ------------------------Asignacion------------------------ */
+
+id = id /* id - id */
+id = 1
+id = 123
+id = .1
+id = 1.05
+id = 19.
+id = "texto"
+id = ""
+
+/* ------------------------Comentario------------------------ */
+
+/**/
+/* */
+/* comentario */
+/* <>#$_°|/**/ */
+
+/* ------------------------Seleccion------------------------ */
+
+if (a < b){ }
+
+if (a > b) { a = 10 }
+
+if(a > b) { }
+
+if(a< b) { }
+
+if(a>b){}
+
+if (a <b) {}
+
+/* Seleccion anidada */
+
+if (a > b){
+ a = b
+ if (a > c)   {
+   if (c < c){
+   }
+ }
+}
+
+/* Seleccion multiple */
+
+/* Seleccion negada */
+
+if (not a > b)
+{
+
+}
+
+/* ------------------------Iteracion------------------------ */
+
+while(a>b){}
+
+while (a < b){
+ a = 40
+}
+
+while (a < b){
+ while (c > b){
+   while (a < c){
+   }
+ }
+}
+
+/*------------------------Salida------------------------*/
+
+write("Hello, world")
+
+/*write("ewr")  /* "ewr" es una cte string */*/
+
+write(var1)  /* var1 es una variable numérica definida previamente */
+
+
+/*------------------------Expresion------------------------*/
 c=d*(e-21)/4

@@ -67,7 +67,6 @@ t_letra = [a-zA-Z]
 
 t_com     = {t_comi}.*{t_comf}
 t_id      = {t_letra}({t_letra}|{t_digcc})*
-
 t_cint    = 0|{t_digsc}{t_digcc}*
 t_cfloat  = {t_punto}{t_digcc}+|{t_digsc}+{t_punto}{t_digcc}*
 t_cstring = \".*\"

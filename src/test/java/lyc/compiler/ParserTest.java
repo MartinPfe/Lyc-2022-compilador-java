@@ -55,7 +55,7 @@ public class ParserTest {
 
     //anda
     @Test
-    //@Disabled
+    @Disabled
     void init() throws Exception {
         compilationSuccessful(readFromFile("init.txt"));
     }

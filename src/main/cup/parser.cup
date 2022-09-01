@@ -5,7 +5,7 @@ import java_cup.runtime.*;
 class Parser;
 
 action code {:
-  private boolean logmsg = false;
+  private boolean logmsg = true;
 :};
 
 parser code {:
@@ -107,28 +107,30 @@ asignacion ::= T_ID T_ASIG expresion  {: if(logmsg){ System.out.println("asignac
 expresion ::= termino                 {: if(logmsg){ System.out.println("expresion = termino"); } :};
 expresion ::= expresion T_SUM termino {: if(logmsg){ System.out.println("+"); } :};
 expresion ::= expresion T_RES termino {: if(logmsg){ System.out.println("-"); } :};
-termino ::= factor                    {: if(logmsg){ System.out.println("Term = factor"); } :};
+termino ::= factor                    {: if(logmsg){ System.out.println("termino = factor"); } :};
 termino ::= termino T_MUL factor      {: if(logmsg){ System.out.println("*"); } :};
 termino ::= termino T_DIV factor      {: if(logmsg){ System.out.println("/"); } :};
-factor ::= T_ID:val                   {: if(logmsg){ System.out.println("Id: " + val); } :};
-factor ::= T_CINT:val                 {: if(logmsg){ System.out.println("cint: " + val ); } :};
-factor ::= T_PARA expresion T_PARC    {: if(logmsg){ System.out.println("factor = (expresion)"); } :};
+factor ::= T_ID:val                   {: if(logmsg){ System.out.println("factor = id ( id: " + val + " )"); } :};
+factor ::= T_CINT:val                 {: if(logmsg){ System.out.println("factor = cint ( cint: " + val + " )"); } :};
+factor ::= T_PARA expresion T_PARC    {: if(logmsg){ System.out.println("factor = ( expresion )"); } :};
 
 //TODO: Mirar si esto esta bien ( porque ni el lexico ni el sintactico saben el tipo de dato de una variable )
-entrada ::= T_PRREAD T_PARA T_ID T_PARC;
+entrada ::= T_PRREAD T_PARA T_ID T_PARC {: if(logmsg){ System.out.println("read"); } :};
 
 //TODO: Mirar si esto esta bien ( porque ni el lexico ni el sintactico saben el tipo de dato de una variable )
-salida ::= T_PRWRITE T_PARA T_ID T_PARC;
-salida ::= T_PRWRITE T_PARA T_CSTRING T_PARC;
+salida ::= T_PRWRITE T_PARA T_ID T_PARC       {: if(logmsg){ System.out.println("write - id"); } :};
+salida ::= T_PRWRITE T_PARA T_CSTRING T_PARC  {: if(logmsg){ System.out.println("write - cstring"); } :};
 
 //bloque de declaracion de variables
-declaracion ::= T_PRINIT T_LLAVA decvar T_LLAVC;
+declaracion ::= T_PRINIT T_LLAVA listavar T_LLAVC {: if(logmsg){ System.out.println("bloque de declaracion"); } :};
 
-decvar ::= listavar;
-decvar ::= decvar listavar;
+//lista de variables
+listavar ::= decvar;
+listavar ::= listavar decvar;
 
-listavar ::= T_ID T_DOSP tipodato;
-listavar ::= T_ID T_COMA listavar;
+//declaracion de variables
+decvar ::= T_ID T_DOSP tipodato;
+decvar ::= T_ID T_COMA decvar;
 
 tipodato ::= T_PRINT;
 tipodato ::= T_PRFLOAT;

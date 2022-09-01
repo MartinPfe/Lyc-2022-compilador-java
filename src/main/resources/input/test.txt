@@ -64,14 +64,5 @@ while (a < b){
  }
 }
 
-/*------------------------Salida------------------------*/
-
-write("Hello, world")
-
-/*write("ewr")  /* "ewr" es una cte string */*/
-
-write(var1)  /* var1 es una variable numérica definida previamente */
-
-
 /*------------------------Expresion------------------------*/
 c=d*(e-21)/4

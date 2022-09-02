@@ -11,10 +11,36 @@ terminal PLUS;
 terminal SUB;
 terminal MULT;
 terminal DIV;
-terminal OPEN_BRACKET;
-terminal CLOSE_BRACKET;
+terminal OP_MAYOR;
+terminal OP_MENOR;
+terminal OP_MAYORIGUAL;
+terminal OP_MENORIGUAL;
+terminal OP_IGUAL;
+terminal OP_NOT;
+terminal OP_AND;
+terminal OP_OR;
+
 terminal INTEGER_CONSTANT;
 terminal IDENTIFIER;
+terminal CTE_FLOAT;
+terminal CTE_STRING;
+
+terminal IF;
+terminal ELSE;
+terminal WHILE;
+terminal INT;
+terminal FLOAT;
+terminal STRING;
+terminal WRITE;
+terminal READ;
+terminal INIT;
+
+/*OTROS CARACTERES*/
+terminal LLAVE_A;
+terminal LLAVE_C;
+terminal OPEN_BRACKET;
+terminal CLOSE_BRACKET;
+terminal DOSPUNTOS;
 
 // Non Terminals
 non terminal sentence;

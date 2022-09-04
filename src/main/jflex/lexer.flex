@@ -4,6 +4,7 @@ import java_cup.runtime.Symbol;
 import lyc.compiler.ParserSym;
 import lyc.compiler.model.*;
 import static lyc.compiler.constants.Constants.*;
+import lyc.compiler.files.SymbolTableGenerator;
 
 %%
 
@@ -107,10 +108,29 @@ blanco          = {LineTerminator} | {Identation}
   {t_prfloat}   { if(logmsg){ System.out.println("t_prfloat");  } return symbol(ParserSym.T_PRFLOAT); }
   {t_prstring}  { if(logmsg){ System.out.println("t_prstring"); } return symbol(ParserSym.T_PRSTRING); }
 
-  {t_id}        { if(logmsg){ System.out.println("t_id");       } return symbol(ParserSym.T_ID, yytext()); }
-  {t_cint}      { if(logmsg){ System.out.println("t_cint");     } return symbol(ParserSym.T_CINT, yytext()); }
-  {t_cfloat}    { if(logmsg){ System.out.println("t_cfloat");   } return symbol(ParserSym.T_CFLOAT, yytext()); }
-  {t_cstring}   { if(logmsg){ System.out.println("t_cstring");  } return symbol(ParserSym.T_CSTRING, yytext()); }
+  {t_id}        {
+                  if(logmsg){ System.out.println("t_id");       }
+                  SymbolTableGenerator.almacenarEnTabla(SymbolTableGenerator.Tipo.TIPO_ID,yytext());
+                  return symbol(ParserSym.T_ID, yytext());
+                }
+
+  {t_cint}      {
+                  if(logmsg){ System.out.println("t_cint");     }
+                  SymbolTableGenerator.almacenarEnTabla(SymbolTableGenerator.Tipo.TIPO_CINT,yytext());
+                  return symbol(ParserSym.T_CINT, yytext());
+                }
+
+  {t_cfloat}    {
+                  if(logmsg){ System.out.println("t_cfloat");   }
+                  SymbolTableGenerator.almacenarEnTabla(SymbolTableGenerator.Tipo.TIPO_CFLOAT,yytext());
+                  return symbol(ParserSym.T_CFLOAT, yytext());
+                }
+
+  {t_cstring}   {
+                  if(logmsg){ System.out.println("t_cstring");  }
+                  SymbolTableGenerator.almacenarEnTabla(SymbolTableGenerator.Tipo.TIPO_CSTRING,yytext());
+                  return symbol(ParserSym.T_CSTRING, yytext());
+                }
 
   {t_com}       { /* do nothing */ }
   {blanco}      { /* do nothing */ }

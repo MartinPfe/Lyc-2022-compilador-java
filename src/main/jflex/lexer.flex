@@ -47,6 +47,9 @@ WhiteSpace = {LineTerminator} | {Identation}
 Identifier = {Letter} ({Letter}|{Digit})*
 IntegerConstant = {Digit}+
 
+KeyWordCicleCondition = IF|ELSE|FOR|WHILE
+KeyWordType = INT|CHAR|LONG|STRING
+
 %%
 
 
@@ -57,6 +60,10 @@ IntegerConstant = {Digit}+
   {Identifier}                             { return symbol(ParserSym.IDENTIFIER, yytext()); }
   /* Constants */
   {IntegerConstant}                        { return symbol(ParserSym.INTEGER_CONSTANT, yytext()); }
+
+  /* KeyWords */
+  {KeyWordCicleCondition}                   { return symbol(ParserSym.KEYWORD); }
+  {KeyWordType}                             { return symbol(ParserSym.KEYWORD); }
 
   /* operators */
   {Plus}                                    { return symbol(ParserSym.PLUS); }

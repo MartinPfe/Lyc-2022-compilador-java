@@ -11,14 +11,13 @@ import java.nio.charset.StandardCharsets;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-//@Disabled
+@Disabled
 public class ParserTest {
 
-    //anda
     @Test
     @Disabled
     public void assignmentWithExpression() throws Exception {
-        compilationSuccessful("c=d*(e-21)/4");
+        compilationSuccessful("c=d*(e- 21)/4");
     }
 
     @Test
@@ -27,7 +26,6 @@ public class ParserTest {
         compilationError("1234");
     }
 
-    //anda
     @Test
     @Disabled
     void assignments() throws Exception {
@@ -40,61 +38,54 @@ public class ParserTest {
         compilationSuccessful(readFromFile("write.txt"));
     }
 
-    //anda
     @Test
     @Disabled
     void read() throws Exception {
         compilationSuccessful(readFromFile("read.txt"));
     }
 
+    //no anda
     @Test
     @Disabled
     void comment() throws Exception {
         compilationSuccessful(readFromFile("comment.txt"));
     }
 
-    //anda
     @Test
     @Disabled
     void init() throws Exception {
         compilationSuccessful(readFromFile("init.txt"));
     }
 
-    //anda
     @Test
     @Disabled
     void and() throws Exception {
         compilationSuccessful(readFromFile("and.txt"));
     }
 
-    //anda
     @Test
     @Disabled
     void or() throws Exception {
         compilationSuccessful(readFromFile("or.txt"));
     }
 
-    //anda
     @Test
     @Disabled
     void not() throws Exception {
         compilationSuccessful(readFromFile("not.txt"));
     }
 
-    //anda
     @Test
     @Disabled
     void ifStatement() throws Exception {
         compilationSuccessful(readFromFile("if.txt"));
     }
 
-    //anda
     @Test
     @Disabled
     void whileStatement() throws Exception {
         compilationSuccessful(readFromFile("while.txt"));
     }
-
 
     private void compilationSuccessful(String input) throws Exception {
         assertThat(scan(input).sym).isEqualTo(ParserSym.EOF);
@@ -113,6 +104,4 @@ public class ParserTest {
         assertThat(resource).isNotNull();
         return IOUtils.toString(resource, StandardCharsets.UTF_8);
     }
-
-
 }

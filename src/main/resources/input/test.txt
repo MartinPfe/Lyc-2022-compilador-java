@@ -6,8 +6,12 @@ id = 123
 id = .1
 id = 1.05
 id = 19.
+id = -.9
+id = -1.1
 id = "texto"
 id = ""
+id = 333
+id = -333
 
 /* ------------------------Comentario------------------------ */
 
@@ -15,6 +19,9 @@ id = ""
 /* */
 /* comentario */
 /* <>#$_°|/**/ */
+/* "string dentro de comentario " */
+/* Esto es un comentario */
+/*123abc456*/
 
 /* ------------------------Seleccion------------------------ */
 
@@ -30,19 +37,22 @@ if(a>b){}
 
 if (a <b) {}
 
-/* Seleccion anidada */
+/* ------------------------Seleccion anidada------------------------ */
 
 if (a > b){
- a = b
  if (a > c)   {
    if (c < c){
    }
  }
 }
 
-/* Seleccion multiple */
+/* ------------------------Seleccion multiple------------------------ */
 
-/* Seleccion negada */
+if(a < b & c > d){}
+
+if(a > a || b < z){}
+
+/* ------------------------Seleccion negada------------------------ */
 
 if (not a > b)
 {
@@ -54,8 +64,9 @@ if (not a > b)
 while(a>b){}
 
 while (a < b){
- a = 40
 }
+
+/* ------------------------Iteracion anidada------------------------ */
 
 while (a < b){
  while (c > b){
@@ -65,4 +76,9 @@ while (a < b){
 }
 
 /*------------------------Expresion------------------------*/
-c=d*(e-21)/4
+
+c=d*(e- 21)/4
+
+a = b + c * ( j + -15) / 2 + 3
+
+/*------------------------Casos de error------------------------*/

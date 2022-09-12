@@ -16,12 +16,11 @@ import static lyc.compiler.constants.Constants.MAX_CSTRING;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
-//@Disabled
+@Disabled
 public class LexerTest {
 
   private Lexer lexer;
 
-  //anda
   @Test
   @Disabled
   public void comment() throws Exception{
@@ -65,11 +64,10 @@ public class LexerTest {
     });
   }
 
-  //anda
   @Test
   @Disabled
   public void assignmentWithExpressions() throws Exception {
-    scan("c=d*(e-21)/4");
+    scan("c=d*(e- 21)/4");
     assertThat(nextToken()).isEqualTo(ParserSym.T_ID);
     assertThat(nextToken()).isEqualTo(ParserSym.T_ASIG);
     assertThat(nextToken()).isEqualTo(ParserSym.T_ID);
@@ -84,7 +82,6 @@ public class LexerTest {
     assertThat(nextToken()).isEqualTo(ParserSym.EOF);
   }
 
-  //anda
   @Test
   @Disabled
   public void unknownCharacter() {
@@ -113,5 +110,4 @@ public class LexerTest {
             .withinRange('a', 'z')
             .build().generate(MAX_CSTRING * 2);
   }
-
 }

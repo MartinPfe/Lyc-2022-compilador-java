@@ -65,11 +65,11 @@ t_digcc = [0-9]
 t_digsc = [1-9]
 t_letra = [a-zA-Z]
 
-t_com     = {t_comi}.*{t_comf}
+t_com     = {t_comi}(.)*{t_comf}
 t_id      = {t_letra}({t_letra}|{t_digcc})*
-t_cint    = 0|{t_digsc}{t_digcc}*
-t_cfloat  = {t_punto}{t_digcc}+|{t_digsc}+{t_punto}{t_digcc}*
-t_cstring = \".*\"
+t_cint    = 0|{t_res}?{t_digsc}{t_digcc}*
+t_cfloat  = {t_res}?{t_punto}{t_digcc}+|{t_res}?{t_digsc}+{t_punto}{t_digcc}*
+t_cstring = \"[^\n\"]*\"
 
 LineTerminator  = \r|\n|\r\n
 InputCharacter  = [^\r\n]
@@ -108,16 +108,14 @@ blanco          = {LineTerminator} | {Identation}
   {t_prstring}  { if(logmsg){ System.out.println("t_prstring"); } return symbol(ParserSym.T_PRSTRING); }
 
   {t_id}        {
-                  if(logmsg){ System.out.println("t_id");       }
+                  if(logmsg){ System.out.println("t_id"); }
 
                   if(!verificar_rango(SymbolTableGenerator.Tipo.TIPO_ID,yytext())){
-                    System.out.println("\n------------\n" +
-                                       "La constante ( " + yytext() + " )" +
-                                       " se encuentra fuera del rango permitido ( " + MIN_ID + " ; " + MAX_ID + " )" +
-                                       "\n------------\n"
-                                      );
-                    //Finalizo la ejecucion del programa
-                    System.exit(0);
+                    throw new InvalidLengthException("\n------------\n" +
+                                                     "El id ( " + yytext() + " )" +
+                                                     " se encuentra fuera del rango permitido ( " + MIN_ID + " ; " + MAX_ID + " )" +
+                                                     "\n------------\n"
+                                                    );
                   }
 
                   SymbolTableGenerator.almacenarEnTabla(SymbolTableGenerator.Tipo.TIPO_ID,yytext());
@@ -125,15 +123,14 @@ blanco          = {LineTerminator} | {Identation}
                 }
 
   {t_cint}      {
-                  if(logmsg){ System.out.println("t_cint");     }
+                  if(logmsg){ System.out.println("t_cint"); }
 
                   if(!verificar_rango(SymbolTableGenerator.Tipo.TIPO_CINT,yytext())){
-                    System.out.println("\n------------\n" +
-                                       "La constante ( " + yytext() + " )" +
-                                       " se encuentra fuera del rango permitido ( " + MIN_CINT + " ; " + MAX_CINT + " )" +
-                                       "\n------------\n"
-                                      );
-                    System.exit(0);
+                    throw new InvalidIntegerException("\n------------\n" +
+                                                      "La constante int ( " + yytext() + " )" +
+                                                      " se encuentra fuera del rango permitido ( " + MIN_CINT + " ; " + MAX_CINT + " )" +
+                                                      "\n------------\n"
+                                                     );
                   }
 
                   SymbolTableGenerator.almacenarEnTabla(SymbolTableGenerator.Tipo.TIPO_CINT,yytext());
@@ -141,11 +138,11 @@ blanco          = {LineTerminator} | {Identation}
                 }
 
   {t_cfloat}    {
-                  if(logmsg){ System.out.println("t_cfloat");   }
+                  if(logmsg){ System.out.println("t_cfloat"); }
 
                   if(!verificar_rango(SymbolTableGenerator.Tipo.TIPO_CFLOAT,yytext())){
                     System.out.println("\n------------\n" +
-                                       "La constante ( " + yytext() + " )" +
+                                       "La constante float ( " + yytext() + " )" +
                                        " se encuentra fuera del rango permitido (+-)( " + MIN_CFLOAT + " ; " + MAX_CFLOAT + " )" +
                                        "\n------------\n"
                                       );
@@ -157,15 +154,14 @@ blanco          = {LineTerminator} | {Identation}
                 }
 
   {t_cstring}   {
-                  if(logmsg){ System.out.println("t_cstring");  }
+                  if(logmsg){ System.out.println("t_cstring " + yytext());  }
 
                   if(!verificar_rango(SymbolTableGenerator.Tipo.TIPO_CSTRING,yytext())){
-                    System.out.println("\n------------\n" +
-                                       "La constante " + yytext() +
-                                       " se encuentra fuera del rango permitido ( " + MIN_CSTRING + " ; " + MAX_CSTRING + " )" +
-                                       "\n------------\n"
-                                      );
-                    System.exit(0);
+                    throw new InvalidLengthException("\n------------\n" +
+                                                     "La constante string " + yytext() +
+                                                     " se encuentra fuera del rango permitido ( " + MIN_CSTRING + " ; " + MAX_CSTRING + " )" +
+                                                     "\n------------\n"
+                                                    );
                   }
 
                   SymbolTableGenerator.almacenarEnTabla(SymbolTableGenerator.Tipo.TIPO_CSTRING,yytext());

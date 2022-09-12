@@ -5,7 +5,7 @@ import java_cup.runtime.*;
 class Parser;
 
 action code {:
-  private boolean logmsg = true;
+  private boolean logmsg = false;
 :};
 
 parser code {:
@@ -84,7 +84,6 @@ sentencia ::= declaracion;
 sentencia ::= asignacion;
 sentencia ::= seleccion;
 sentencia ::= iteracion;
-sentencia ::= expresion;
 sentencia ::= entrada;
 sentencia ::= salida;
 

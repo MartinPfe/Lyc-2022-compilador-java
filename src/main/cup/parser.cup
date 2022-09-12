@@ -100,7 +100,6 @@ condicion ::= T_ID opcomp T_ID                        {: if(logmsg){ System.out.
 condicion ::= T_NOT T_ID opcomp T_ID                  {: if(logmsg){ System.out.println("condicion negada"); } :};
 condicion ::= T_ID opcomp T_ID oplog T_ID opcomp T_ID {: if(logmsg){ System.out.println("condicion multiple"); } :};
 
-asignacion ::= T_ID T_ASIG T_CFLOAT   {: if(logmsg){ System.out.println("asignacion id - cfloat"); } :};
 asignacion ::= T_ID T_ASIG T_CSTRING  {: if(logmsg){ System.out.println("asignacion id - cstring"); } :};
 asignacion ::= T_ID T_ASIG expresion  {: if(logmsg){ System.out.println("asignacion id - expresion"); } :};
 
@@ -112,6 +111,7 @@ termino ::= termino T_MUL factor      {: if(logmsg){ System.out.println("*"); } 
 termino ::= termino T_DIV factor      {: if(logmsg){ System.out.println("/"); } :};
 factor ::= T_ID:val                   {: if(logmsg){ System.out.println("factor = id ( id: " + val + " )"); } :};
 factor ::= T_CINT:val                 {: if(logmsg){ System.out.println("factor = cint ( cint: " + val + " )"); } :};
+factor ::= T_CFLOAT:val               {: if(logmsg){ System.out.println("factor = cfloat ( cfloat: " + val + " )"); } :};
 factor ::= T_PARA expresion T_PARC    {: if(logmsg){ System.out.println("factor = ( expresion )"); } :};
 
 //TODO: Mirar si esto esta bien ( porque ni el lexico ni el sintactico saben el tipo de dato de una variable )

@@ -3,9 +3,8 @@ package lyc.compiler;
 import java_cup.runtime.Symbol;
 import lyc.compiler.ParserSym;
 import lyc.compiler.model.*;
-import static lyc.compiler.constants.Constants.*;
 import lyc.compiler.files.SymbolTableGenerator;
-
+import static lyc.compiler.constants.Constants.*;
 %%
 
 %public
@@ -110,24 +109,65 @@ blanco          = {LineTerminator} | {Identation}
 
   {t_id}        {
                   if(logmsg){ System.out.println("t_id");       }
+
+                  if(!verificar_rango(SymbolTableGenerator.Tipo.TIPO_ID,yytext())){
+                    System.out.println("\n------------\n" +
+                                       "La constante ( " + yytext() + " )" +
+                                       " se encuentra fuera del rango permitido ( " + MIN_ID + " ; " + MAX_ID + " )" +
+                                       "\n------------\n"
+                                      );
+                    //Finalizo la ejecucion del programa
+                    System.exit(0);
+                  }
+
                   SymbolTableGenerator.almacenarEnTabla(SymbolTableGenerator.Tipo.TIPO_ID,yytext());
                   return symbol(ParserSym.T_ID, yytext());
                 }
 
   {t_cint}      {
                   if(logmsg){ System.out.println("t_cint");     }
+
+                  if(!verificar_rango(SymbolTableGenerator.Tipo.TIPO_CINT,yytext())){
+                    System.out.println("\n------------\n" +
+                                       "La constante ( " + yytext() + " )" +
+                                       " se encuentra fuera del rango permitido ( " + MIN_CINT + " ; " + MAX_CINT + " )" +
+                                       "\n------------\n"
+                                      );
+                    System.exit(0);
+                  }
+
                   SymbolTableGenerator.almacenarEnTabla(SymbolTableGenerator.Tipo.TIPO_CINT,yytext());
                   return symbol(ParserSym.T_CINT, yytext());
                 }
 
   {t_cfloat}    {
                   if(logmsg){ System.out.println("t_cfloat");   }
+
+                  if(!verificar_rango(SymbolTableGenerator.Tipo.TIPO_CFLOAT,yytext())){
+                    System.out.println("\n------------\n" +
+                                       "La constante ( " + yytext() + " )" +
+                                       " se encuentra fuera del rango permitido (+-)( " + MIN_CFLOAT + " ; " + MAX_CFLOAT + " )" +
+                                       "\n------------\n"
+                                      );
+                    System.exit(0);
+                  }
+
                   SymbolTableGenerator.almacenarEnTabla(SymbolTableGenerator.Tipo.TIPO_CFLOAT,yytext());
                   return symbol(ParserSym.T_CFLOAT, yytext());
                 }
 
   {t_cstring}   {
                   if(logmsg){ System.out.println("t_cstring");  }
+
+                  if(!verificar_rango(SymbolTableGenerator.Tipo.TIPO_CSTRING,yytext())){
+                    System.out.println("\n------------\n" +
+                                       "La constante " + yytext() +
+                                       " se encuentra fuera del rango permitido ( " + MIN_CSTRING + " ; " + MAX_CSTRING + " )" +
+                                       "\n------------\n"
+                                      );
+                    System.exit(0);
+                  }
+
                   SymbolTableGenerator.almacenarEnTabla(SymbolTableGenerator.Tipo.TIPO_CSTRING,yytext());
                   return symbol(ParserSym.T_CSTRING, yytext());
                 }

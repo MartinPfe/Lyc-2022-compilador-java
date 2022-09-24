@@ -1,20 +1,22 @@
 package lyc.compiler;
 
-import lyc.compiler.factories.LexerFactory;
-import lyc.compiler.model.CompilerException;
-import lyc.compiler.model.InvalidIntegerException;
-import lyc.compiler.model.InvalidLengthException;
-import lyc.compiler.model.UnknownCharacterException;
+import static com.google.common.truth.Truth.assertThat;
+import static lyc.compiler.constants.Constants.MAX_CSTRING;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.io.IOException;
+
 import org.apache.commons.text.CharacterPredicates;
 import org.apache.commons.text.RandomStringGenerator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import java.io.IOException;
-import static com.google.common.truth.Truth.assertThat;
-import static lyc.compiler.constants.Constants.MAX_CSTRING;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import lyc.compiler.factories.LexerFactory;
+import lyc.compiler.model.CompilerException;
+import lyc.compiler.model.InvalidIntegerException;
+import lyc.compiler.model.InvalidLengthException;
+import lyc.compiler.model.UnknownCharacterException;
 
 @Disabled
 public class LexerTest {
@@ -22,14 +24,12 @@ public class LexerTest {
   private Lexer lexer;
 
   @Test
-  @Disabled
   public void comment() throws Exception{
     scan("/*This is a comment*/");
     assertThat(nextToken()).isEqualTo(ParserSym.EOF);
   }
 
   @Test
-  @Disabled
   public void invalidStringConstantLength() {
     assertThrows(InvalidLengthException.class, () -> {
       scan("\"%s\"".formatted(getRandomString()));
@@ -38,7 +38,6 @@ public class LexerTest {
   }
 
   @Test
-  @Disabled
   public void invalidIdLength() {
     assertThrows(InvalidLengthException.class, () -> {
       scan(getRandomString());
@@ -47,7 +46,6 @@ public class LexerTest {
   }
 
   @Test
-  @Disabled
   public void invalidPositiveIntegerConstantValue() {
     assertThrows(InvalidIntegerException.class, () -> {
       scan("%d".formatted(9223372036854775807L));
@@ -56,7 +54,6 @@ public class LexerTest {
   }
 
   @Test
-  @Disabled
   public void invalidNegativeIntegerConstantValue() {
     assertThrows(InvalidIntegerException.class, () -> {
       scan("%d".formatted(-9223372036854775807L));
@@ -65,7 +62,6 @@ public class LexerTest {
   }
 
   @Test
-  @Disabled
   public void assignmentWithExpressions() throws Exception {
     scan("c=d*(e- 21)/4");
     assertThat(nextToken()).isEqualTo(ParserSym.T_ID);
@@ -83,7 +79,6 @@ public class LexerTest {
   }
 
   @Test
-  @Disabled
   public void unknownCharacter() {
     assertThrows(UnknownCharacterException.class, () -> {
       scan("#");

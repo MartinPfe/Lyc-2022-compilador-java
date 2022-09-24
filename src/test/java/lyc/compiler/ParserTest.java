@@ -1,17 +1,19 @@
 package lyc.compiler;
 
-import java_cup.runtime.Symbol;
-import lyc.compiler.factories.ParserFactory;
-import org.apache.commons.io.IOUtils;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@Disabled
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+
+import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+
+import java_cup.runtime.Symbol;
+import lyc.compiler.factories.ParserFactory;
+
 public class ParserTest {
 
     @Test
@@ -46,7 +48,6 @@ public class ParserTest {
 
     //no anda
     @Test
-    @Disabled
     void comment() throws Exception {
         compilationSuccessful(readFromFile("comment.txt"));
     }
@@ -88,6 +89,17 @@ public class ParserTest {
     }
 
     private void compilationSuccessful(String input) throws Exception {
+        System.out.println("compilationSuccessful:");
+
+        var scanned = scan(input);
+        System.out.println("Scanned:");
+        System.out.println(scanned);
+
+        var symbol = scan(input).sym;
+
+        System.out.println("Symbol:");
+        System.out.println(symbol);
+
         assertThat(scan(input).sym).isEqualTo(ParserSym.EOF);
     }
 
@@ -100,8 +112,17 @@ public class ParserTest {
     }
 
     private String readFromFile(String fileName) throws IOException {
+        System.out.println("Print 1:");
+
         InputStream resource = getClass().getResourceAsStream("/%s".formatted(fileName));
+        System.out.println("Resource:");
+        System.out.println(resource);
         assertThat(resource).isNotNull();
-        return IOUtils.toString(resource, StandardCharsets.UTF_8);
+        System.out.println("Print 3");
+        String result = IOUtils.toString(resource, StandardCharsets.UTF_8);
+        System.out.println("Result");
+        System.out.println(result);
+
+        return result;
     }
 }

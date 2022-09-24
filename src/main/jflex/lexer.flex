@@ -20,7 +20,7 @@ import static lyc.compiler.constants.Constants.*;
 
 
 %{
-  private boolean logmsg = false;
+  private boolean logmsg = true;
 
   private Symbol symbol(int type) {
     return new Symbol(type, yyline, yycolumn);
@@ -81,6 +81,17 @@ LineTerminator  = \r|\n|\r\n
 InputCharacter  = [^\r\n]
 Identation      =  [ \t\f]
 blanco          = {LineTerminator} | {Identation}
+
+Caracter = [a-z,A-Z,0-9,=,>,<,!,:,+,\,*,/,@,.,?]
+Contenido = ({Caracter}+|{blanco})*
+Comentario = {t_comi}{Contenido}{t_comf}
+
+
+SALTO_LINEA			=	"\n|\r\n|\r"
+MENOS_ASTERISCO		=	[^*]
+COMENTARIO_MULTI    =   "/*" ({SALTO_LINEA}* {MENOS_ASTERISCO}* {SALTO_LINEA}*)* "*/"
+CUALQUIER_CARACTER 	= 	[^\r\n]
+COMENTARIO_SINGLE   =   "//" {CUALQUIER_CARACTER}* {SALTO_LINEA}?
 %%
 
 /* keywords */
@@ -178,9 +189,16 @@ blanco          = {LineTerminator} | {Identation}
                   return symbol(ParserSym.T_CSTRING, yytext());
                 }
 
-  {t_com}       { /* do nothing */ }
+  {Comentario}       {  if(logmsg){ System.out.println("COMENTARIO DETECTADO");  } }
   {blanco}      { /* do nothing */ }
+{COMENTARIO_SINGLE} {	/*ignorar*/										}
+{COMENTARIO_MULTI}  {	/*ignorar*/										}
+  "\n"				{}
+  "\t"				{}
+  "\n\t"				{}
+  " "					{}
+  "\r\n"				{}
 }
 
 /* error fallback */
-[^]             { throw new UnknownCharacterException(yytext()); }
+[^]             { if(logmsg){ System.out.println("FALLBACK");  }; throw new UnknownCharacterException(yytext()); }

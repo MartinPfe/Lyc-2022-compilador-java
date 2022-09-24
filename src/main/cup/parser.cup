@@ -5,7 +5,7 @@ import java_cup.runtime.*;
 class Parser;
 
 action code {:
-  private boolean logmsg = true;
+  private boolean logmsg = false;
 :};
 
 parser code {:
@@ -20,6 +20,8 @@ parser code {:
   public void report_fatal_error(String message, Object info) throws Exception{
     done_parsing();
     //TODO: Esto podria ser una CompilerException
+      System.out.println(message); 
+      System.out.println(info.toString()); 
     throw new Exception("Error sintactico, finalizando programa\n");
   }
 :};

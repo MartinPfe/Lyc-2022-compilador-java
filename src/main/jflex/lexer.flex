@@ -70,7 +70,7 @@ t_digcc = [0-9]
 t_digsc = [1-9]
 t_letra = [a-zA-Z]
 
-t_com     = {t_comi}(.)*{t_comf}
+t_com     = {t_comi}[^\n]*{t_comf}
 t_id      = {t_letra}({t_letra}|{t_digcc})*
 t_cint    = 0|{t_res}?{t_digsc}{t_digcc}*
 t_cfloat  = {t_res}?{t_punto}{t_digcc}+|{t_res}?{t_digsc}+{t_punto}{t_digcc}*

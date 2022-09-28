@@ -18,7 +18,7 @@ id = -333
 /**/
 /* */
 /* comentario */
-/* <>#$_°|/**/ */
+/* <>#$_°|* */
 /* "string dentro de comentario " */
 /* Esto es un comentario */
 /*123abc456*/
@@ -81,6 +81,17 @@ c=d*(e- 21)/4
 
 a = b + c * ( j + -15) / 2 + 3
 
+/*------------------------Entrada------------------------*/
+
+read(var1)
+read ( var2 )
+
+/*------------------------Salida------------------------*/
+
+write("String")
+write(numvar)
+write("")
+
 /*------------------------Temas especiales------------------------*/
 
 #Iguales ( a+w/b, [(d- 3)*2,e,f] )
@@ -91,3 +102,73 @@ REPEAT 10 [a = 10, if(a > b){}, a = b + c * ( j + -15) / 2 + 3, write("abc")]
 
 /*------------------------Casos de error------------------------*/
 
+/* Constante string sin las comillas que cierran */
+/*"Hola, mundo!*/
+
+/* Constante string fuera de rango */
+/*"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"*/
+
+/* Constante entera fuera de rango */
+/*a = 999999*/
+/*a = -999999*/
+
+/* Constante float fuera de rango */
+/*a = 999999999999999999999.9*/
+
+/* Seleccion a la que le falta un parentesis */
+/*if (a > b {}*/
+
+/*if a < b){}*/
+
+/* Seleccion a la que le falta una llave */
+/*if(a > b){*/
+
+/*if(a > b) }*/
+
+/* Seleccion con una condicion no valida */
+/*if(if(a>b)){}*/
+
+/*if (not a > b || a < c){}*/
+
+/* Seleccion con una condicion vacia */
+/*if(){}*/
+
+/* Iteracion con una condicion vacia */
+/*while(){}*/
+
+/* Iteracion con una condicion no valida */
+/*while(123){}*/
+
+/* Iteracion a la que le falta una llave */
+/*while(a < b){*/
+
+/* Id fuera del rango permitido */
+/*aaaaaaaaaaaaaaaaaaa = 10*/
+
+/* Funcion #Iguales que no tiene el primer parametro */
+/*#Iguales ( , [(d- 3)*2,e,f] )*/
+
+/* Funcion #Iguales con el segundo parametro mal formado */
+/*#Iguales ( a+w/b, [(d- 3)*2,e,f )*/
+
+/* Funcion Repeat Inline que le falta el primer parametro */
+/*REPEAT [a = 0]*/
+
+/* Funcion Repeat Inline sin el segundo parametro */
+/*REPEAT 10 []*/
+
+/* Entrada con parametro erroneo */
+/*read(123)*/
+/*read(3.14)*/
+/*read("cadena")*/
+/*read(while(a>b){})*/
+/*read()*/
+
+/* Salida con parametro erroneo */
+/*write()*/
+/*write(REPEAT 10 [a=0])*/
+/*write(a+b)*/
+/*write(if(a<v){})*/
+
+/* Comentario sin cerrar */
+/* /* Comentario */

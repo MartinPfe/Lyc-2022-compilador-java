@@ -60,6 +60,7 @@ terminal T_PRREPEAT;
 terminal T_PRIGUALES;
 
 // Non Terminals
+non terminal comienzo;
 non terminal programa;
 non terminal sentencia;
 non terminal declaracion;
@@ -84,8 +85,10 @@ non terminal termino;
 non terminal factor;
 
 // Start Symbol Definition
-start with programa;
+start with comienzo;
 
+comienzo ::=;
+comienzo ::= programa;
 programa ::= sentencia;
 programa ::= programa sentencia;
 

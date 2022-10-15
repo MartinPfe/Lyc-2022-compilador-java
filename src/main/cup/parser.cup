@@ -146,9 +146,9 @@ tipodato ::= T_PRINT    {: if(logmsg){ System.out.println("t_print"); } :};
 tipodato ::= T_PRFLOAT  {: if(logmsg){ System.out.println("t_prfloat"); } :};
 tipodato ::= T_PRSTRING {: if(logmsg){ System.out.println("t_prstring"); } :};
 
-condicion ::= T_ID opcomp T_ID                        {: if(logmsg){ System.out.println("condicion simple"); } :};
-condicion ::= T_NOT T_ID opcomp T_ID                  {: if(logmsg){ System.out.println("condicion negada"); } :};
-condicion ::= T_ID opcomp T_ID oplog T_ID opcomp T_ID {: if(logmsg){ System.out.println("condicion multiple"); } :};
+condicion ::= expresion opcomp expresion                         {: if(logmsg){ System.out.println("condicion simple2"); } :};
+condicion ::= T_NOT expresion opcomp expresion                   {: if(logmsg){ System.out.println("condicion negada"); } :};
+condicion ::= expresion opcomp expresion oplog expresion opcomp expresion        {: if(logmsg){ System.out.println("condicion multiple"); } :};
 
 oplog ::= T_OR  {: if(logmsg){ System.out.println("or"); } :};
 oplog ::= T_AND {: if(logmsg){ System.out.println("and"); } :};
@@ -162,6 +162,8 @@ expresion ::= expresion T_RES termino {: if(logmsg){ System.out.println("-"); } 
 termino ::= factor                    {: if(logmsg){ System.out.println("termino = factor"); } :};
 termino ::= termino T_MUL factor      {: if(logmsg){ System.out.println("*"); } :};
 termino ::= termino T_DIV factor      {: if(logmsg){ System.out.println("/"); } :};
+
+
 factor ::= T_ID:val                   {: if(logmsg){ System.out.println("factor = id ( id: " + val + " )"); } :};
 factor ::= T_CINT:val                 {: if(logmsg){ System.out.println("factor = cint ( cint: " + val + " )"); } :};
 factor ::= T_CFLOAT:val               {: if(logmsg){ System.out.println("factor = cfloat ( cfloat: " + val + " )"); } :};

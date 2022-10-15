@@ -1,0 +1,8 @@
+if (a > 10 & b > 7)
+{
+    write("a mayor que 10 y b mayor que 7")
+}
+else
+{
+    write("a menor igual 10 o b menor igual a 7")
+}

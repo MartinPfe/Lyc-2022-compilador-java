@@ -1,0 +1,8 @@
+if (a > 10)
+{
+    write("a es mas grande que 10")
+}
+else
+{
+    write("a es mas chico o igual a 10")
+}

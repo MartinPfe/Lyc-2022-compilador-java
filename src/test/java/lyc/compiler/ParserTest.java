@@ -11,65 +11,65 @@ import java.nio.charset.StandardCharsets;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@Disabled
+//@Disabled
 public class ParserTest {
 
     @Test
-    //@Disabled
+    @Disabled
     public void assignmentWithExpression() throws Exception {
         compilationSuccessful("c=d*(e- 21)/4");
     }
 
     @Test
-    //@Disabled
+    @Disabled
     public void syntaxError() {
         compilationError("1234");
     }
 
     @Test
-    //@Disabled
+    @Disabled
     void assignments() throws Exception {
         compilationSuccessful(readFromFile("assignments.txt"));
     }
 
     @Test
-    //@Disabled
+    @Disabled
     void write() throws Exception {
         compilationSuccessful(readFromFile("write.txt"));
     }
 
     @Test
-    //@Disabled
+    @Disabled
     void read() throws Exception {
         compilationSuccessful(readFromFile("read.txt"));
     }
 
     @Test
-    //@Disabled
+    @Disabled
     void comment() throws Exception {
         compilationSuccessful(readFromFile("comment.txt"));
     }
 
     @Test
-    //@Disabled
+    @Disabled
     void init() throws Exception {
         compilationSuccessful(readFromFile("init.txt"));
     }
 
     @Test
-    //@Disabled
+    @Disabled
     void and() throws Exception {
         compilationSuccessful(readFromFile("and.txt"));
     }
 
     @Test
-    //@Disabled
+    @Disabled
     void or() throws Exception {
         compilationSuccessful(readFromFile("or.txt"));
     }
 
     @Test
-    //@Disabled
+    @Disabled
     void not() throws Exception {
         compilationSuccessful(readFromFile("not.txt"));
     }
@@ -81,7 +81,29 @@ public class ParserTest {
     }
 
     @Test
+
     //@Disabled
+    void ifStatementWithConstant() throws Exception {
+        compilationSuccessful(readFromFile("if-constantes.txt"));
+    }
+
+    @Test
+
+        //@Disabled
+    void ifStatementWithConstantsInverted() throws Exception {
+        compilationSuccessful(readFromFile("if-constantes-invertido.txt"));
+    }
+
+    @Test
+
+        //@Disabled
+    void ifStatementWithMultipleConditionAndConstants() throws Exception {
+        compilationSuccessful(readFromFile("if-compuesto-constantes.txt"));
+    }
+
+
+    @Test
+    @Disabled
     void whileStatement() throws Exception {
         compilationSuccessful(readFromFile("while.txt"));
     }

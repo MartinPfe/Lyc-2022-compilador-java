@@ -27,27 +27,31 @@ public class SymbolTableGenerator implements FileGenerator{
         String linea_a = "";
 
         switch(tipo){
-          case TIPO_ID:
-            linea_a += String.format("%"+ (-MAX_NOMBRE) + "s|" + "%" + (-MAX_TIPO) + "s|" + "%" + (-MAX_VALOR) + "s|" + "%" + (-MAX_LONGITUD) + "s",lexema,"","","");
-          break;
+            case TIPO_ID:
+                linea_a += String.format("%"+ (-MAX_NOMBRE) + "s|" + "%" + (-MAX_TIPO) + "s|" + "%" + (-MAX_VALOR) + "s|" + "%" + (-MAX_LONGITUD) + "s",lexema,"","", "");
+            break;
+
       		case TIPO_CINT:
-            /* A el valor de MAX_NOMBRE necesito sacarle la longitud de _ */
-            linea_a += String.format("_%"+ (-(MAX_NOMBRE - 1)) + "s|" + "%" + (-MAX_TIPO) + "s|" + "%" + (-MAX_VALOR) + "s|" + "%" + (-MAX_LONGITUD) + "s",lexema,"cint",lexema,"");
+                /* A el valor de MAX_NOMBRE necesito sacarle la longitud de _ */
+                linea_a += String.format("_%"+ (-(MAX_NOMBRE - 1)) + "s|" + "%" + (-MAX_TIPO) + "s|" + "%" + (-MAX_VALOR) + "s|" + "%" + (-MAX_LONGITUD) + "s",lexema,"cint",lexema, lexema.length());
       		break;
+
       		case TIPO_CFLOAT:
-            /* A el valor de MAX_NOMBRE necesito sacarle la longitud de _ */
-            linea_a += String.format("_%"+ (-(MAX_NOMBRE - 1)) + "s|" + "%" + (-MAX_TIPO) + "s|" + "%" + (-MAX_VALOR) + "s|" + "%" + (-MAX_LONGITUD) + "s",lexema,"cfloat",lexema,"");
+                /* A el valor de MAX_NOMBRE necesito sacarle la longitud de _ */
+                linea_a += String.format("_%"+ (-(MAX_NOMBRE - 1)) + "s|" + "%" + (-MAX_TIPO) + "s|" + "%" + (-MAX_VALOR) + "s|" + "%" + (-MAX_LONGITUD) + "s",lexema,"cfloat",lexema, lexema.length() );
       		break;
+
       		case TIPO_CSTRING:
-            /* El valor recibido tiene las comillas incluidas, entonces length() retorna la longitud de la string + 2 */
-            /* A el valor de MAX_NOMBRE necesito sacarle la longitud de _str */
-            /* A el valor de lexema necesito sacarle las comillas */
-            linea_a += String.format("_str%"+ (-(MAX_NOMBRE - 4)) + "d|" + "%" + (-MAX_TIPO) + "s|" + "%" + (-MAX_VALOR) + "s|" + "%" + (-MAX_LONGITUD) + "d",str_nro,"cstring",lexema.substring(1,lexema.length() - 1),(lexema.length() - 2));
-      			++str_nro;
+                /* El valor recibido tiene las comillas incluidas, entonces length() retorna la longitud de la string + 2 */
+                /* A el valor de MAX_NOMBRE necesito sacarle la longitud de _str */
+                /* A el valor de lexema necesito sacarle las comillas */
+                linea_a += String.format("_str%"+ (-(MAX_NOMBRE - 4)) + "d|" + "%" + (-MAX_TIPO) + "s|" + "%" + (-MAX_VALOR) + "s|" + "%" + (-MAX_LONGITUD) + "d",str_nro,"cstring",lexema.substring(1,lexema.length() - 1),(lexema.length() - 2));
+                    ++str_nro;
       		break;
+
       		default:
-            System.out.println("\nTipo de dato invalido\nFinalizando programa");
-            System.exit(0);
+                System.out.println("\nTipo de dato invalido\nFinalizando programa");
+                System.exit(0);
       		break;
       	}
 

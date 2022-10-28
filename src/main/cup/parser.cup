@@ -1,11 +1,14 @@
 package lyc.compiler;
 
 import java_cup.runtime.*;
+import lyc.compiler.files.IntermediateCodeGenerator;
 
 class Parser;
 
 action code {:
-  private boolean logmsg = true;
+  private String __opcmp = "";
+  private String __oplog = "";
+  private boolean __logmsg = false;
 :};
 
 parser code {:
@@ -101,30 +104,102 @@ sentencia ::= frepeat;
 sentencia ::= entrada;
 sentencia ::= salida;
 
-declaracion ::= T_PRINIT T_LLAVA listavar T_LLAVC {: if(logmsg){ System.out.println("bloque de declaracion"); } :};
+declaracion ::= T_PRINIT T_LLAVA listavar T_LLAVC
+              {:
+                if(__logmsg){ System.out.println("bloque de declaracion"); }
+              :};
 
-asignacion ::= T_ID T_ASIG T_CSTRING  {: if(logmsg){ System.out.println("asignacion id - cstring"); } :};
-asignacion ::= T_ID T_ASIG expresion  {: if(logmsg){ System.out.println("asignacion id - expresion"); } :};
+asignacion ::= T_ID:id T_ASIG T_CSTRING:str
+            {:
+              IntermediateCodeGenerator.insertar(str);
+              IntermediateCodeGenerator.insertar(id);
+              IntermediateCodeGenerator.insertar("=");
+              if(__logmsg){ System.out.println("asignacion id - cstring"); }
+            :};
 
-seleccion ::= T_PRIF T_PARA condicion T_PARC T_LLAVA T_LLAVC                                            {: if(logmsg){ System.out.println("seleccion vacia "); } :};
-seleccion ::= T_PRIF T_PARA condicion T_PARC T_LLAVA programa T_LLAVC                                   {: if(logmsg){ System.out.println("seleccion"); } :};
-seleccion ::= T_PRIF T_PARA condicion T_PARC T_LLAVA programa T_LLAVC T_PRELSE T_LLAVA T_LLAVC          {: if(logmsg){ System.out.println("seleccion con else vacio"); } :};
-seleccion ::= T_PRIF T_PARA condicion T_PARC T_LLAVA programa T_LLAVC T_PRELSE T_LLAVA programa T_LLAVC {: if(logmsg){ System.out.println("seleccion con else"); } :};
+asignacion ::= T_ID:id T_ASIG expresion
+            {:
+              IntermediateCodeGenerator.insertar(id);
+              IntermediateCodeGenerator.insertar("=");
+              if(__logmsg){ System.out.println("asignacion id - expresion"); }
+            :};
 
-iteracion ::= T_PRWHILE T_PARA condicion T_PARC T_LLAVA T_LLAVC           {: if(logmsg){ System.out.println("iteracion vacia"); } :};
-iteracion ::= T_PRWHILE T_PARA condicion T_PARC T_LLAVA programa T_LLAVC  {: if(logmsg){ System.out.println("iteracion"); } :};
+seleccion ::= T_PRIF T_PARA condicion T_PARC T_LLAVA T_LLAVC
+          {:
+            IntermediateCodeGenerator.desapilar();
+            if(__logmsg){ System.out.println("seleccion vacia "); }
+          :};
 
-figuales ::= T_PRIGUALES T_PARA expresion T_COMA T_CORA listaexp T_CORC T_PARC {: if(logmsg){ System.out.println("#Iguales"); } :};
+seleccion ::= T_PRIF T_PARA condicion T_PARC T_LLAVA programa T_LLAVC
+          {:
+            IntermediateCodeGenerator.desapilar();
+            if(__logmsg){ System.out.println("seleccion"); }
+          :};
 
-frepeat ::= T_PRREPEAT T_CINT T_CORA listasent T_CORC {: if(logmsg){ System.out.println("REPEAT"); } :};
+seleccion ::= T_PRIF T_PARA condicion T_PARC T_LLAVA programa T_LLAVC T_PRELSE T_LLAVA T_LLAVC
+          {:
+            if(__logmsg){ System.out.println("seleccion con else vacio"); }
+          :};
+seleccion ::= T_PRIF T_PARA condicion T_PARC T_LLAVA programa T_LLAVC T_PRELSE T_LLAVA programa T_LLAVC
+          {:
+            if(__logmsg){ System.out.println("seleccion con else"); }
+          :};
+
+iteracion ::= T_PRWHILE
+          {:
+            //IntermediateCodeGenerator.insertar("while");
+          :}
+
+          T_PARA condicion T_PARC T_LLAVA T_LLAVC
+
+          {:
+            if(__logmsg){ System.out.println("iteracion vacia"); }
+          :};
+
+iteracion ::= T_PRWHILE
+          {:
+            //IntermediateCodeGenerator.insertar("while");
+          :}
+
+          T_PARA condicion T_PARC T_LLAVA programa T_LLAVC
+
+          {:
+            if(__logmsg){ System.out.println("iteracion"); }
+          :};
+
+figuales ::= T_PRIGUALES T_PARA expresion T_COMA T_CORA listaexp T_CORC T_PARC
+          {:
+            if(__logmsg){ System.out.println("#Iguales"); }
+          :};
+
+frepeat ::= T_PRREPEAT T_CINT T_CORA listasent T_CORC
+        {:
+          if(__logmsg){ System.out.println("REPEAT"); }
+        :};
 
 //TODO: Mirar si esto esta bien ( porque ni el lexico ni el sintactico saben el tipo de dato de una variable )
-entrada ::= T_PRREAD T_PARA T_ID T_PARC {: if(logmsg){ System.out.println("read"); } :};
+entrada ::= T_PRREAD T_PARA T_ID:id T_PARC
+        {:
+          IntermediateCodeGenerator.insertar("read");
+          IntermediateCodeGenerator.insertar(id);
+          if(__logmsg){ System.out.println("read"); }
+        :};
 
 //TODO: Mirar si esto esta bien ( porque ni el lexico ni el sintactico saben el tipo de dato de una variable )
-salida ::= T_PRWRITE T_PARA T_ID T_PARC       {: if(logmsg){ System.out.println("write - id"); } :};
-salida ::= T_PRWRITE T_PARA T_CSTRING T_PARC  {: if(logmsg){ System.out.println("write - cstring"); } :};
-
+salida ::= T_PRWRITE T_PARA T_ID:id T_PARC
+        {:
+          IntermediateCodeGenerator.insertar("write");
+          //TODO: Aca deberia buscar en la tabla de simbolos el id e insertar el contenido ?
+          IntermediateCodeGenerator.insertar(id);
+          if(__logmsg){ System.out.println("write - id"); }
+        :};
+salida ::= T_PRWRITE T_PARA T_CSTRING:str T_PARC
+        {:
+          IntermediateCodeGenerator.insertar("write");
+          //TODO: Aca deberia buscar en la tabla de simbolos el str e insertar el contenido ?
+          IntermediateCodeGenerator.insertar(str);
+          if(__logmsg){ System.out.println("write - cstring"); }
+        :};
 
 //lista de variables
 listavar ::= decvar;
@@ -142,29 +217,120 @@ listasent ::= listasent T_COMA sentencia;
 decvar ::= T_ID T_COMA decvar;
 decvar ::= T_ID T_DOSP tipodato;
 
-tipodato ::= T_PRINT    {: if(logmsg){ System.out.println("t_print"); } :};
-tipodato ::= T_PRFLOAT  {: if(logmsg){ System.out.println("t_prfloat"); } :};
-tipodato ::= T_PRSTRING {: if(logmsg){ System.out.println("t_prstring"); } :};
+tipodato ::= T_PRINT
+          {:
+            if(__logmsg){ System.out.println("t_print"); }
+          :};
+tipodato ::= T_PRFLOAT
+          {:
+            if(__logmsg){ System.out.println("t_prfloat"); }
+          :};
+tipodato ::= T_PRSTRING
+          {:
+            if(__logmsg){ System.out.println("t_prstring"); }
+          :};
 
-condicion ::= expresion opcomp expresion                         {: if(logmsg){ System.out.println("condicion simple2"); } :};
-condicion ::= T_NOT expresion opcomp expresion                   {: if(logmsg){ System.out.println("condicion negada"); } :};
-condicion ::= expresion opcomp expresion oplog expresion opcomp expresion        {: if(logmsg){ System.out.println("condicion multiple"); } :};
+condicion ::= expresion opcomp expresion
+          {:
+            IntermediateCodeGenerator.insertar("CMP");
+            IntermediateCodeGenerator.insertar(__opcmp);
+            IntermediateCodeGenerator.apilar();
+            if(__logmsg){ System.out.println("condicion simple"); }
+          :};
 
-oplog ::= T_OR  {: if(logmsg){ System.out.println("or"); } :};
-oplog ::= T_AND {: if(logmsg){ System.out.println("and"); } :};
+condicion ::= T_NOT
+          {:
+            IntermediateCodeGenerator.insertar("NOT");
+          :}
 
-opcomp ::= T_MAYOR {: if(logmsg){ System.out.println("mayor"); } :};
-opcomp ::= T_MENOR {: if(logmsg){ System.out.println("menor"); } :};
+          expresion opcomp expresion
 
-expresion ::= termino                 {: if(logmsg){ System.out.println("expresion = termino"); } :};
-expresion ::= expresion T_SUM termino {: if(logmsg){ System.out.println("+"); } :};
-expresion ::= expresion T_RES termino {: if(logmsg){ System.out.println("-"); } :};
-termino ::= factor                    {: if(logmsg){ System.out.println("termino = factor"); } :};
-termino ::= termino T_MUL factor      {: if(logmsg){ System.out.println("*"); } :};
-termino ::= termino T_DIV factor      {: if(logmsg){ System.out.println("/"); } :};
+          {:
+            IntermediateCodeGenerator.insertar(__opcmp);
+            IntermediateCodeGenerator.apilar();
+            if(__logmsg){ System.out.println("condicion negada"); }
+          :};
 
+condicion ::= expresion opcomp expresion oplog expresion opcomp expresion
+            {:
+              if(__logmsg){ System.out.println("condicion multiple"); }
+            :};
 
-factor ::= T_ID:val                   {: if(logmsg){ System.out.println("factor = id ( id: " + val + " )"); } :};
-factor ::= T_CINT:val                 {: if(logmsg){ System.out.println("factor = cint ( cint: " + val + " )"); } :};
-factor ::= T_CFLOAT:val               {: if(logmsg){ System.out.println("factor = cfloat ( cfloat: " + val + " )"); } :};
-factor ::= T_PARA expresion T_PARC    {: if(logmsg){ System.out.println("factor = ( expresion )"); } :};
+oplog ::= T_OR
+        {:
+          if(__logmsg){ System.out.println("or"); }
+        :};
+
+oplog ::= T_AND
+        {:
+          if(__logmsg){ System.out.println("and"); }
+        :};
+
+opcomp ::= T_MAYOR
+        {:
+          __opcmp = "BLE";
+          if(__logmsg){ System.out.println("mayor"); }
+        :};
+
+opcomp ::= T_MENOR
+        {:
+          __opcmp = "BGE";
+          if(__logmsg){ System.out.println("menor"); }
+        :};
+
+expresion ::= termino
+          {:
+            if(__logmsg){ System.out.println("expresion = termino"); }
+          :};
+
+expresion ::= expresion T_SUM termino
+          {:
+            IntermediateCodeGenerator.insertar("+");
+            if(__logmsg){ System.out.println("+"); }
+          :};
+
+expresion ::= expresion T_RES termino
+          {:
+            IntermediateCodeGenerator.insertar("-");
+            if(__logmsg){ System.out.println("-"); }
+          :};
+
+termino ::= factor
+        {:
+          if(__logmsg){ System.out.println("termino = factor"); }
+        :};
+
+termino ::= termino T_MUL factor
+        {:
+          IntermediateCodeGenerator.insertar("*");
+          if(__logmsg){ System.out.println("*"); }
+        :};
+
+termino ::= termino T_DIV:val factor
+        {:
+          IntermediateCodeGenerator.insertar("/");
+          if(__logmsg){ System.out.println("/"); }
+        :};
+
+factor ::= T_ID:val
+        {:
+          IntermediateCodeGenerator.insertar(val);
+          if(__logmsg){ System.out.println("factor = id ( id: " + val + " )"); }
+        :};
+
+factor ::= T_CINT:val
+        {:
+          IntermediateCodeGenerator.insertar(val);
+          if(__logmsg){ System.out.println("factor = cint ( cint: " + val + " )"); }
+        :};
+
+factor ::= T_CFLOAT:val
+        {:
+          IntermediateCodeGenerator.insertar(val);
+          if(__logmsg){ System.out.println("factor = cfloat ( cfloat: " + val + " )"); }
+        :};
+
+factor ::= T_PARA expresion T_PARC
+        {:
+          if(__logmsg){ System.out.println("factor = ( expresion )"); }
+        :};

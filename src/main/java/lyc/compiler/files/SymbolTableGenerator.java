@@ -65,7 +65,7 @@ public class SymbolTableGenerator implements FileGenerator{
     public void generate(FileWriter fileWriter) throws IOException {
         String res = "";
 
-        res += String.format("%"+ (-MAX_NOMBRE) + "s|" + "%" + (-MAX_TIPO) + "s|" + "%" + (-MAX_VALOR) + "s|" + "%" + (-MAX_LONGITUD) + "s","Nombre","Valor","Tipo","Longitud");
+        res += String.format("%"+ (-MAX_NOMBRE) + "s|" + "%" + (-MAX_TIPO) + "s|" + "%" + (-MAX_VALOR) + "s|" + "%" + (-MAX_LONGITUD) + "s","Nombre","Tipo","Valor","Longitud");
         res += "\n";
 
         for(String valor : lista){

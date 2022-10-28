@@ -6,9 +6,12 @@ import lyc.compiler.files.IntermediateCodeGenerator;
 class Parser;
 
 action code {:
+  private int __nloops = -1;
+  private int __condmul = 0;
   private String __opcmp = "";
   private String __oplog = "";
   private boolean __logmsg = false;
+  private boolean __declaracion = false;
 :};
 
 parser code {:
@@ -63,7 +66,7 @@ terminal T_PRREPEAT;
 terminal T_PRIGUALES;
 
 // Non Terminals
-non terminal comienzo;
+non terminal codigo;
 non terminal programa;
 non terminal sentencia;
 non terminal declaracion;
@@ -88,14 +91,40 @@ non terminal termino;
 non terminal factor;
 
 // Start Symbol Definition
-start with comienzo;
+start with programa;
 
-comienzo ::=;
-comienzo ::= programa;
-programa ::= sentencia;
-programa ::= programa sentencia;
+programa ::=;
+programa ::=
+          {:
+            if(__logmsg){
+              if(!__declaracion){
+              System.out.println("Programa sin declaracion previa\nFinalizando ejecucion");
+              System.exit(1);
+              }
+            }
+          :}
 
-sentencia ::= declaracion;
+          codigo;
+
+programa ::= declaracion
+          {:
+            if(__logmsg){
+              if(!__declaracion){
+              System.out.println("Declaracion");
+              __declaracion = true;
+              }
+              else{
+              System.out.println("Declaracion previa\nFinalizando ejecucion");
+              System.exit(1);
+              }
+            }
+          :}
+
+          codigo;
+
+codigo ::= sentencia;
+codigo ::= codigo sentencia;
+
 sentencia ::= asignacion;
 sentencia ::= seleccion;
 sentencia ::= iteracion;
@@ -124,46 +153,49 @@ asignacion ::= T_ID:id T_ASIG expresion
               if(__logmsg){ System.out.println("asignacion id - expresion"); }
             :};
 
-seleccion ::= T_PRIF T_PARA condicion T_PARC T_LLAVA T_LLAVC
+seleccion ::= T_PRIF T_PARA condicion T_PARC T_LLAVA programa T_LLAVC
           {:
-            IntermediateCodeGenerator.desapilar();
-            if(__logmsg){ System.out.println("seleccion vacia "); }
+            if(__condmul > 0){
+              --__condmul;
+              IntermediateCodeGenerator.desapilar_e_insertar(0);
+            }
+            IntermediateCodeGenerator.desapilar_e_insertar(0);
+            if(__logmsg){ System.out.println("seleccion"); }
           :};
 
 seleccion ::= T_PRIF T_PARA condicion T_PARC T_LLAVA programa T_LLAVC
           {:
-            IntermediateCodeGenerator.desapilar();
-            if(__logmsg){ System.out.println("seleccion"); }
-          :};
+            IntermediateCodeGenerator.desapilar_e_insertar(2);
+          :}
 
-seleccion ::= T_PRIF T_PARA condicion T_PARC T_LLAVA programa T_LLAVC T_PRELSE T_LLAVA T_LLAVC
+          T_PRELSE T_LLAVA
+
           {:
-            if(__logmsg){ System.out.println("seleccion con else vacio"); }
-          :};
-seleccion ::= T_PRIF T_PARA condicion T_PARC T_LLAVA programa T_LLAVC T_PRELSE T_LLAVA programa T_LLAVC
+            IntermediateCodeGenerator.insertar("BI");
+            IntermediateCodeGenerator.apilar();
+          :}
+
+          programa T_LLAVC
+
           {:
+            IntermediateCodeGenerator.desapilar_e_insertar(1);
             if(__logmsg){ System.out.println("seleccion con else"); }
           :};
 
 iteracion ::= T_PRWHILE
           {:
-            //IntermediateCodeGenerator.insertar("while");
-          :}
-
-          T_PARA condicion T_PARC T_LLAVA T_LLAVC
-
-          {:
-            if(__logmsg){ System.out.println("iteracion vacia"); }
-          :};
-
-iteracion ::= T_PRWHILE
-          {:
-            //IntermediateCodeGenerator.insertar("while");
+            IntermediateCodeGenerator.apilar();
+            IntermediateCodeGenerator.insertar("WHILE");
+            ++__nloops;
           :}
 
           T_PARA condicion T_PARC T_LLAVA programa T_LLAVC
 
           {:
+            IntermediateCodeGenerator.desapilar_e_insertar(2);
+            IntermediateCodeGenerator.insertar("BI");
+            IntermediateCodeGenerator.insertar(IntermediateCodeGenerator.obtener_tope_de_pila() + __nloops);
+            --__nloops;
             if(__logmsg){ System.out.println("iteracion"); }
           :};
 
@@ -180,23 +212,24 @@ frepeat ::= T_PRREPEAT T_CINT T_CORA listasent T_CORC
 //TODO: Mirar si esto esta bien ( porque ni el lexico ni el sintactico saben el tipo de dato de una variable )
 entrada ::= T_PRREAD T_PARA T_ID:id T_PARC
         {:
-          IntermediateCodeGenerator.insertar("read");
+          IntermediateCodeGenerator.insertar("READ");
           IntermediateCodeGenerator.insertar(id);
+          IntermediateCodeGenerator.insertar("=");
           if(__logmsg){ System.out.println("read"); }
         :};
 
 //TODO: Mirar si esto esta bien ( porque ni el lexico ni el sintactico saben el tipo de dato de una variable )
 salida ::= T_PRWRITE T_PARA T_ID:id T_PARC
         {:
-          IntermediateCodeGenerator.insertar("write");
+          IntermediateCodeGenerator.insertar("WRITE");
           //TODO: Aca deberia buscar en la tabla de simbolos el id e insertar el contenido ?
           IntermediateCodeGenerator.insertar(id);
           if(__logmsg){ System.out.println("write - id"); }
         :};
+
 salida ::= T_PRWRITE T_PARA T_CSTRING:str T_PARC
         {:
-          IntermediateCodeGenerator.insertar("write");
-          //TODO: Aca deberia buscar en la tabla de simbolos el str e insertar el contenido ?
+          IntermediateCodeGenerator.insertar("WRITE");
           IntermediateCodeGenerator.insertar(str);
           if(__logmsg){ System.out.println("write - cstring"); }
         :};
@@ -221,10 +254,12 @@ tipodato ::= T_PRINT
           {:
             if(__logmsg){ System.out.println("t_print"); }
           :};
+
 tipodato ::= T_PRFLOAT
           {:
             if(__logmsg){ System.out.println("t_prfloat"); }
           :};
+
 tipodato ::= T_PRSTRING
           {:
             if(__logmsg){ System.out.println("t_prstring"); }
@@ -234,7 +269,7 @@ condicion ::= expresion opcomp expresion
           {:
             IntermediateCodeGenerator.insertar("CMP");
             IntermediateCodeGenerator.insertar(__opcmp);
-            IntermediateCodeGenerator.apilar();
+            IntermediateCodeGenerator.apilar_y_avanzar();
             if(__logmsg){ System.out.println("condicion simple"); }
           :};
 
@@ -246,23 +281,44 @@ condicion ::= T_NOT
           expresion opcomp expresion
 
           {:
+            IntermediateCodeGenerator.insertar("CMP");
             IntermediateCodeGenerator.insertar(__opcmp);
-            IntermediateCodeGenerator.apilar();
+            IntermediateCodeGenerator.apilar_y_avanzar();
             if(__logmsg){ System.out.println("condicion negada"); }
           :};
 
-condicion ::= expresion opcomp expresion oplog expresion opcomp expresion
-            {:
-              if(__logmsg){ System.out.println("condicion multiple"); }
-            :};
+condicion ::= expresion opcomp expresion
+          {:
+            IntermediateCodeGenerator.insertar("CMP");
+            IntermediateCodeGenerator.insertar(__opcmp);
+            IntermediateCodeGenerator.apilar_y_avanzar();
+          :}
+
+          oplog
+
+          {:
+            IntermediateCodeGenerator.insertar(__oplog);
+          :}
+
+          expresion opcomp expresion
+
+          {:
+            IntermediateCodeGenerator.insertar("CMP");
+            IntermediateCodeGenerator.insertar(__opcmp);
+            IntermediateCodeGenerator.apilar_y_avanzar();
+            ++__condmul;
+            if(__logmsg){ System.out.println("condicion multiple"); }
+          :};
 
 oplog ::= T_OR
         {:
+          __oplog = "OR";
           if(__logmsg){ System.out.println("or"); }
         :};
 
 oplog ::= T_AND
         {:
+          __oplog = "AND";
           if(__logmsg){ System.out.println("and"); }
         :};
 

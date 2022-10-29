@@ -172,6 +172,8 @@ write("")
 
 #Iguales ( a+w/b, [(d- 3)*2,e,f] )
 
+#Iguales ( a+w/b, [(d- 3)*2,a + e / 99, 33 - 77 * ( x + y ), 1, 2, 99] )
+
 REPEAT 10 [a = 0]
 REPEAT 10 [a = 10, if(a > b){}, a = b + c * ( j + -15) / 2 + 3, write("abc")]
 

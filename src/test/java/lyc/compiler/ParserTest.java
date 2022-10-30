@@ -33,7 +33,7 @@ public class ParserTest {
     }
 
     @Test
-    //@Disabled
+    @Disabled
     void declarations() throws Exception {
         compilationSuccessful(readFromFile("declarations.txt"));
     }

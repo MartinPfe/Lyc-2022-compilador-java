@@ -96,19 +96,76 @@ public class SymbolTableGenerator implements FileGenerator{
       }
   }
 
-    @Override
-    public void generate(FileWriter fileWriter) throws IOException {
-        String res = "";
+  public static void validarTipoDato(String variable, Tipo tipoRequerido) {
 
-        res += String.format("%"+ (-MAX_NOMBRE) + "s|" + "%" + (-MAX_TIPO) + "s|" + "%" + (-MAX_VALOR) + "s|" + "%" + (-MAX_LONGITUD) + "s","Nombre","Tipo","Valor","Longitud");
-        res += "\n";
-
-        for(String valor : lista){
-          res += valor;
-          res += "\n";
-        }
-
-        /* Elimino el ultimo salto de linea */
-        fileWriter.write(res.substring(0,res.length() - "\n".length()));
+    System.out.println("Verificando que el tipo de " + variable + " sea " + obtenerStrTipoDato(tipoRequerido) + ".");
+      
+    if (!identificadores.containsKey(variable)){
+      System.out.println("La variable " + variable + " no ha sido declarada.");
+      System.exit(0);
     }
+
+    Tipo tipoVariable = identificadores.get(variable);
+    
+    if (tipoVariable != tipoRequerido) {
+      System.out.println("Asignacion invalida en " + variable + ".");
+      System.exit(0);
+    }
+  }
+
+  public static Tipo obtenerTipoDato(String variable) {
+
+    if (!identificadores.containsKey(variable)){
+      System.out.println("La variable " + variable + " no ha sido declarada.");
+      System.exit(0);
+    }
+
+    return identificadores.get(variable);
+  }
+
+  public static void compararTipoDato(Tipo primerTipo, Tipo segundoTipo) {
+    if (primerTipo != segundoTipo) {
+      System.out.println("No se puede realizar la operacion entre variable " + obtenerStrTipoDato(primerTipo) + " y variable " + obtenerStrTipoDato(segundoTipo) + ".");
+      System.exit(0);
+    }
+  }
+
+  public static String obtenerStrTipoDato(Tipo tipoDato) {
+
+    if (tipoDato == null){
+      return "nulltype";
+    }
+
+    switch(tipoDato){
+      case TIPO_CINT:
+        return "Int";
+
+      case TIPO_CFLOAT:
+        return "Float";
+
+      case TIPO_CSTRING:
+        return "String";
+
+      default:
+        System.out.println("\nTipo de dato invalido\nFinalizando programa");
+        System.exit(0);
+        return "";
+    }
+  }
+
+  @Override
+  public void generate(FileWriter fileWriter) throws IOException {
+      String res = "";
+
+      res += String.format("%"+ (-MAX_NOMBRE) + "s|" + "%" + (-MAX_TIPO) + "s|" + "%" + (-MAX_VALOR) + "s|" + "%" + (-MAX_LONGITUD) + "s","Nombre","Tipo","Valor","Longitud");
+      res += "\n";
+
+      for(String valor : lista){
+        res += valor;
+        res += "\n";
+      }
+
+      /* Elimino el ultimo salto de linea */
+      fileWriter.write(res.substring(0,res.length() - "\n".length()));
+  }
 }

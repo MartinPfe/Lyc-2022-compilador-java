@@ -2,24 +2,29 @@
 
 init {
     a1, b1 : Float
-    variable1 : Int
+    a, b, c, d, e, f, i, j, h, p, w, x, y, z, variable1, variable2 : Int
     p1, p2, p3 : String
 }
 
 /* ------------------------Asignacion------------------------ */
 
-id = id /* id - id */
-id = 1
-id = 123
-id = .1
-id = 1.05
-id = 19.
-id = -.9
-id = -1.1
-id = "texto"
-id = ""
-id = 333
-id = -333
+variable1 = 1
+variable1 = 123
+variable2 = variable1
+variable1 = 333
+variable1 = -333
+
+a1 = .1
+a1 = 1.05
+a1 = 19.
+a1 = -.9
+a1 = -1.1
+b1 = a1
+
+p1 = "texto"
+p1 = ""
+p2 = p1
+
 
 /* ------------------------Comentario------------------------ */
 

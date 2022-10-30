@@ -28,6 +28,8 @@ action code {:
 
   //Variable para guardar el tipo de dato de la variable
   private SymbolTableGenerator.Tipo __ultimo_tipo_dato;
+  private SymbolTableGenerator.Tipo __tipo_dato_factor;
+  private SymbolTableGenerator.Tipo __aux_tipo_dato_factor;
 :};
 
 parser code {:
@@ -172,6 +174,7 @@ declaracion ::= T_PRINIT T_LLAVA listavar T_LLAVC
 
 asignacion ::= T_ID:id T_ASIG T_CSTRING:str
             {:
+              SymbolTableGenerator.validarTipoDato(id + "", SymbolTableGenerator.Tipo.TIPO_CSTRING);
               IntermediateCodeGenerator.insertar(str);
               IntermediateCodeGenerator.insertar(id);
               IntermediateCodeGenerator.insertar("=");
@@ -180,6 +183,7 @@ asignacion ::= T_ID:id T_ASIG T_CSTRING:str
 
 asignacion ::= T_ID:id T_ASIG expresion
             {:
+              SymbolTableGenerator.validarTipoDato(id + "", __tipo_dato_factor);
               IntermediateCodeGenerator.insertar(id);
               IntermediateCodeGenerator.insertar("=");
               if(__logmsg){ System.out.println("asignacion id - expresion"); }
@@ -257,6 +261,7 @@ frepeat ::= T_PRREPEAT T_CINT T_CORA listasent T_CORC
 //TODO: Mirar si esto esta bien ( porque ni el lexico ni el sintactico saben el tipo de dato de una variable )
 entrada ::= T_PRREAD T_PARA T_ID:id T_PARC
         {:
+
           IntermediateCodeGenerator.insertar("READ");
           IntermediateCodeGenerator.insertar(id);
           IntermediateCodeGenerator.insertar("=");
@@ -326,7 +331,6 @@ listasent ::= listasent T_COMA sentencia;
 decvar ::= T_ID:val T_COMA decvar
           {:
             SymbolTableGenerator.almacenarIdentificador(__ultimo_tipo_dato, val + "");
-
           :};
 
 decvar ::= T_ID:val T_DOSP tipodato
@@ -450,7 +454,7 @@ termino ::= termino T_MUL factor
           if(__logmsg){ System.out.println("*"); }
         :};
 
-termino ::= termino T_DIV:val factor
+termino ::= termino T_DIV factor
         {:
           IntermediateCodeGenerator.insertar("/");
           if(__logmsg){ System.out.println("/"); }
@@ -458,19 +462,25 @@ termino ::= termino T_DIV:val factor
 
 factor ::= T_ID:val
         {:
+          __tipo_dato_factor = SymbolTableGenerator.obtenerTipoDato(val + "");
           IntermediateCodeGenerator.insertar(val);
+
           if(__logmsg){ System.out.println("factor = id ( id: " + val + " )"); }
         :};
 
 factor ::= T_CINT:val
         {:
           IntermediateCodeGenerator.insertar(val);
+          __tipo_dato_factor = SymbolTableGenerator.Tipo.TIPO_CINT;
+
           if(__logmsg){ System.out.println("factor = cint ( cint: " + val + " )"); }
         :};
 
 factor ::= T_CFLOAT:val
         {:
           IntermediateCodeGenerator.insertar(val);
+          __tipo_dato_factor = SymbolTableGenerator.Tipo.TIPO_CFLOAT;
+
           if(__logmsg){ System.out.println("factor = cfloat ( cfloat: " + val + " )"); }
         :};
 

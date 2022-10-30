@@ -191,6 +191,10 @@ REPEAT 10 [a = 10, if(a > b){}, a = b + c * ( j + -15) / 2 + 3, write("abc")]
 /* Constante string fuera de rango */
 /*"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"*/
 
+/* Asignacion de datos string en variables int o float */
+/* variable1 = "hola" */
+/* a1 = "HOLA" */
+
 /* Constante entera fuera de rango */
 /*a = 999999*/
 /*a = -999999*/

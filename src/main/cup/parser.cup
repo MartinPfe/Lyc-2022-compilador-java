@@ -2,11 +2,12 @@ package lyc.compiler;
 
 import java_cup.runtime.*;
 import lyc.compiler.files.IntermediateCodeGenerator;
+import lyc.compiler.files.SymbolTableGenerator;
 
 class Parser;
 
 action code {:
-  private boolean __logmsg = false;
+  private boolean __logmsg = true;
 
   //Variable relacionada con ciclos while anidados
   private int __nloops = -1;
@@ -24,6 +25,9 @@ action code {:
   private String __figuales_pivot = "__figuales_pivot";
   private String __figuales_cont = "__figuales_cont";
   private String __figuales_exp = "__figuales_exp";
+
+  //Variable para guardar el tipo de dato de la variable
+  private SymbolTableGenerator.Tipo __ultimo_tipo_dato;
 :};
 
 parser code {:
@@ -120,19 +124,35 @@ programa ::=
 
 programa ::= declaracion
           {:
-            if(__logmsg){
-              if(!__declaracion){
-              System.out.println("Declaracion");
-              __declaracion = true;
+            if(__logmsg) {
+              if(!__declaracion) {
+                System.out.println("Declaracion");
+                __declaracion = true;
               }
-              else{
-              System.out.println("Declaracion previa\nFinalizando ejecucion");
-              System.exit(1);
+              else {
+                System.out.println("Declaracion previa\nFinalizando ejecucion");
+                System.exit(1);
               }
             }
           :}
 
           codigo;
+
+//Esto permite un programa solo con declaraciones
+programa ::= declaracion
+          {:
+            if(__logmsg) {
+              if(!__declaracion) {
+                System.out.println("Declaracion");
+                __declaracion = true;
+              }
+              else {
+                System.out.println("Declaracion previa\nFinalizando ejecucion");
+                System.exit(1);
+              }
+            }
+          :}
+          ;
 
 codigo ::= sentencia;
 codigo ::= codigo sentencia;
@@ -303,22 +323,34 @@ listasent ::= sentencia;
 listasent ::= listasent T_COMA sentencia;
 
 //declaracion de variables
-decvar ::= T_ID T_COMA decvar;
-decvar ::= T_ID T_DOSP tipodato;
+decvar ::= T_ID:val T_COMA decvar
+          {:
+            SymbolTableGenerator.almacenarIdentificador(__ultimo_tipo_dato, val + "");
+
+          :};
+
+decvar ::= T_ID:val T_DOSP tipodato
+          {:
+            SymbolTableGenerator.almacenarIdentificador(__ultimo_tipo_dato, val + "");
+          :};
 
 tipodato ::= T_PRINT
           {:
-            if(__logmsg){ System.out.println("t_print"); }
+            if(__logmsg){ System.out.println("TipoDato: t_print"); }
+            __ultimo_tipo_dato = SymbolTableGenerator.Tipo.TIPO_CINT;
           :};
 
 tipodato ::= T_PRFLOAT
           {:
-            if(__logmsg){ System.out.println("t_prfloat"); }
+            if(__logmsg){ System.out.println("TipoDato: t_prfloat"); }
+            __ultimo_tipo_dato = SymbolTableGenerator.Tipo.TIPO_CFLOAT;
+
           :};
 
 tipodato ::= T_PRSTRING
           {:
-            if(__logmsg){ System.out.println("t_prstring"); }
+            if(__logmsg){ System.out.println("TipoDato: t_prstring"); }
+            __ultimo_tipo_dato = SymbolTableGenerator.Tipo.TIPO_CSTRING;
           :};
 
 condicion ::= expresion opcomp expresion

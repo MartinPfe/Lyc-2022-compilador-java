@@ -235,6 +235,9 @@ REPEAT 10 [a = 10, if(a > b){}, a = b + c * ( j + -15) / 2 + 3, write("abc")]
 /* Funcion Repeat Inline sin el segundo parametro */
 /*REPEAT 10 []*/
 
+/* Variable ya declarada */
+/* variable1 : String */
+
 /* Entrada con parametro erroneo */
 /*read(123)*/
 /*read(3.14)*/

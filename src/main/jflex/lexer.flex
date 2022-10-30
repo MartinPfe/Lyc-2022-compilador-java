@@ -20,7 +20,7 @@ import static lyc.compiler.constants.Constants.*;
 
 
 %{
-  private boolean __logmsg = false;
+  private boolean __logmsg = true;
 
   private Symbol symbol(int type) {
     return new Symbol(type, yyline, yycolumn);
@@ -128,7 +128,6 @@ blanco          = {LineTerminator} | {Identation}
                                                     );
                   }
 
-                  SymbolTableGenerator.almacenarEnTabla(SymbolTableGenerator.Tipo.TIPO_ID,yytext());
                   return symbol(ParserSym.T_ID, yytext());
                 }
 

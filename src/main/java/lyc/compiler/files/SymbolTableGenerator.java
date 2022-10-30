@@ -12,6 +12,7 @@ public class SymbolTableGenerator implements FileGenerator{
     private static int MAX_LONGITUD   = 4;
     private static int str_nro        = 0;
     private static List<String> lista = new ArrayList<String>();
+    private static HashMap<String, Tipo> identificadores = new HashMap<String, Tipo>();
 
     public static enum Tipo {
       TIPO_ID,
@@ -27,10 +28,6 @@ public class SymbolTableGenerator implements FileGenerator{
         String linea_a = "";
 
         switch(tipo){
-            case TIPO_ID:
-                linea_a += String.format("%"+ (-MAX_NOMBRE) + "s|" + "%" + (-MAX_TIPO) + "s|" + "%" + (-MAX_VALOR) + "s|" + "%" + (-MAX_LONGITUD) + "s",lexema,"","", "");
-            break;
-
       		case TIPO_CINT:
                 /* A el valor de MAX_NOMBRE necesito sacarle la longitud de _ */
                 linea_a += String.format("_%"+ (-(MAX_NOMBRE - 1)) + "s|" + "%" + (-MAX_TIPO) + "s|" + "%" + (-MAX_VALOR) + "s|" + "%" + (-MAX_LONGITUD) + "s",lexema,"cint",lexema, lexema.length());
@@ -46,7 +43,7 @@ public class SymbolTableGenerator implements FileGenerator{
                 /* A el valor de MAX_NOMBRE necesito sacarle la longitud de _str */
                 /* A el valor de lexema necesito sacarle las comillas */
                 linea_a += String.format("_str%"+ (-(MAX_NOMBRE - 4)) + "d|" + "%" + (-MAX_TIPO) + "s|" + "%" + (-MAX_VALOR) + "s|" + "%" + (-MAX_LONGITUD) + "d",str_nro,"cstring",lexema.substring(1,lexema.length() - 1),(lexema.length() - 2));
-                    ++str_nro;
+                ++str_nro;
       		break;
 
       		default:
@@ -60,6 +57,44 @@ public class SymbolTableGenerator implements FileGenerator{
           lista.add(linea_a);
         }
     }
+
+    public static void almacenarIdentificador(Tipo tipo, String nombre){
+      /* Variable que uso para almacenar el contenido que se va a guardar en la ts */
+      String linea_a = "";
+
+      if (identificadores.containsKey(nombre)){
+        System.out.println("La variable " + nombre + " ya ha sido declarada.");
+        System.exit(0);
+      }
+
+      identificadores.put(nombre, tipo);
+
+      switch(tipo){
+        case TIPO_CINT:
+              /* A el valor de MAX_NOMBRE necesito sacarle la longitud de _ */
+              linea_a += String.format("_%"+ (-(MAX_NOMBRE - 1)) + "s|" + "%" + (-MAX_TIPO) + "s|" + "%" + (-MAX_VALOR) + "s|" + "%" + (-MAX_LONGITUD) + "s",nombre,"cint",nombre, nombre.length());
+        break;
+
+        case TIPO_CFLOAT:
+              /* A el valor de MAX_NOMBRE necesito sacarle la longitud de _ */
+              linea_a += String.format("_%"+ (-(MAX_NOMBRE - 1)) + "s|" + "%" + (-MAX_TIPO) + "s|" + "%" + (-MAX_VALOR) + "s|" + "%" + (-MAX_LONGITUD) + "s",nombre,"cfloat",nombre, nombre.length() );
+        break;
+
+        case TIPO_CSTRING:
+              linea_a += String.format("_%"+ (-(MAX_NOMBRE - 1)) + "s|" + "%" + (-MAX_TIPO) + "s|" + "%" + (-MAX_VALOR) + "s|" + "%" + (-MAX_LONGITUD) + "s",nombre,"cstring",nombre, nombre.length());
+        break;
+
+        default:
+              System.out.println("\nTipo de dato invalido\nFinalizando programa");
+              System.exit(0);
+        break;
+      }
+
+      /* Verifico que la entrada no este duplicada */
+      if(!lista.contains(linea_a)){
+        lista.add(linea_a);
+      }
+  }
 
     @Override
     public void generate(FileWriter fileWriter) throws IOException {

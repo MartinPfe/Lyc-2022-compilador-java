@@ -1,7 +1,10 @@
 package lyc.compiler;
 
+import java.util.*;
 import java_cup.runtime.*;
+import lyc.compiler.files.SymbolTableGenerator;
 import lyc.compiler.files.IntermediateCodeGenerator;
+import lyc.compiler.files.SymbolTableGenerator.Simbolo;
 
 class Parser;
 
@@ -24,6 +27,15 @@ action code {:
   private String __figuales_pivot = "__figuales_pivot";
   private String __figuales_cont = "__figuales_cont";
   private String __figuales_exp = "__figuales_exp";
+
+  //Variable relacionada con la función Repeat Inline:
+  private String __repeat_cantidad = "__repeat_cantidad";
+
+  //Variables relacionadas con el bloque de declaracion
+  private SymbolTableGenerator.Tipo __tipo_dato_var;
+  private List<Object> __lista_variables = new ArrayList<Object>();
+
+  private Simbolo __simbolo;
 :};
 
 parser code {:
@@ -111,7 +123,7 @@ programa ::=
             if(__logmsg){
               if(!__declaracion){
               System.out.println("Programa sin declaracion previa\nFinalizando ejecucion");
-              System.exit(1);
+              System.exit(0);
               }
             }
           :}
@@ -127,7 +139,7 @@ programa ::= declaracion
               }
               else{
               System.out.println("Declaracion previa\nFinalizando ejecucion");
-              System.exit(1);
+              System.exit(0);
               }
             }
           :}
@@ -152,6 +164,18 @@ declaracion ::= T_PRINIT T_LLAVA listavar T_LLAVC
 
 asignacion ::= T_ID:id T_ASIG T_CSTRING:str
             {:
+              __simbolo = SymbolTableGenerator.obtener_simbolo_de_tabla(id);
+              if(__simbolo == null){
+                //variable no declarada
+                System.out.println("Variable `" + id + "` no declarada\nFinalizando ejecucion");
+                System.exit(0);
+              }
+              if(SymbolTableGenerator.comparar_tipo(__simbolo,SymbolTableGenerator.Tipo.TIPO_STRING)){
+                //no coincide el tipo de dato
+                System.out.println("Asignacion de tipos no compatibles\nFinalizando ejecucion");
+                System.exit(0);
+              }
+
               IntermediateCodeGenerator.insertar(str);
               IntermediateCodeGenerator.insertar(id);
               IntermediateCodeGenerator.insertar("=");
@@ -160,6 +184,13 @@ asignacion ::= T_ID:id T_ASIG T_CSTRING:str
 
 asignacion ::= T_ID:id T_ASIG expresion
             {:
+              __simbolo = SymbolTableGenerator.obtener_simbolo_de_tabla(id);
+              if(__simbolo == null){
+                //variable no declarada
+                System.out.println("Variable `" + id + "` no declarada\nFinalizando ejecucion");
+                System.exit(0);
+              }
+
               IntermediateCodeGenerator.insertar(id);
               IntermediateCodeGenerator.insertar("=");
               if(__logmsg){ System.out.println("asignacion id - expresion"); }
@@ -229,14 +260,40 @@ figuales ::= T_PRIGUALES
             if(__logmsg){ System.out.println("#Iguales"); }
           :};
 
-frepeat ::= T_PRREPEAT T_CINT T_CORA listasent T_CORC
+frepeat ::= T_PRREPEAT T_CINT:val
         {:
+          IntermediateCodeGenerator.insertar(__repeat_cantidad);
+          IntermediateCodeGenerator.insertar(val);
+          IntermediateCodeGenerator.insertar("=");
+          IntermediateCodeGenerator.apilar();
+          IntermediateCodeGenerator.insertar(__repeat_cantidad);
+          IntermediateCodeGenerator.insertar(0);
+          IntermediateCodeGenerator.insertar("CMP");
+          IntermediateCodeGenerator.insertar("BLE");
+          IntermediateCodeGenerator.apilar_y_avanzar();
+        :}
+
+        T_CORA codigo T_CORC
+        {:
+          IntermediateCodeGenerator.insertar(__repeat_cantidad);
+          IntermediateCodeGenerator.insertar(1);
+          IntermediateCodeGenerator.insertar("-");
+          IntermediateCodeGenerator.insertar(__repeat_cantidad);
+          IntermediateCodeGenerator.insertar("=");
+          IntermediateCodeGenerator.insertar("BI");
+          IntermediateCodeGenerator.desapilar_e_insertar(2);
+          IntermediateCodeGenerator.insertar(IntermediateCodeGenerator.obtener_tope_de_pila() + 2);
           if(__logmsg){ System.out.println("REPEAT"); }
         :};
 
 //TODO: Mirar si esto esta bien ( porque ni el lexico ni el sintactico saben el tipo de dato de una variable )
 entrada ::= T_PRREAD T_PARA T_ID:id T_PARC
         {:
+          if(SymbolTableGenerator.obtener_simbolo_de_tabla(id) == null){
+            if(__logmsg){System.out.println("La variable " + id + " no esta declarada\nFinalizando programa"); }
+            System.exit(0);
+          }
+
           IntermediateCodeGenerator.insertar("READ");
           IntermediateCodeGenerator.insertar(id);
           IntermediateCodeGenerator.insertar("=");
@@ -246,9 +303,14 @@ entrada ::= T_PRREAD T_PARA T_ID:id T_PARC
 //TODO: Mirar si esto esta bien ( porque ni el lexico ni el sintactico saben el tipo de dato de una variable )
 salida ::= T_PRWRITE T_PARA T_ID:id T_PARC
         {:
+          __simbolo = SymbolTableGenerator.obtener_simbolo_de_tabla(id);
+          if(__simbolo == null){
+            if(__logmsg){System.out.println("La variable " + id + " no esta declarada\nFinalizando programa"); }
+            System.exit(0);
+          }
+
           IntermediateCodeGenerator.insertar("WRITE");
-          //TODO: Aca deberia buscar en la tabla de simbolos el id e insertar el contenido ?
-          IntermediateCodeGenerator.insertar(id);
+          IntermediateCodeGenerator.insertar(__simbolo.valor);
           if(__logmsg){ System.out.println("write - id"); }
         :};
 
@@ -299,25 +361,43 @@ listaexp ::= listaexp T_COMA expresion
           :};
 
 //lista de sentencias
-listasent ::= sentencia;
-listasent ::= listasent T_COMA sentencia;
+//listasent ::= sentencia;
+//listasent ::= listasent T_COMA sentencia;
 
 //declaracion de variables
-decvar ::= T_ID T_COMA decvar;
-decvar ::= T_ID T_DOSP tipodato;
+decvar ::= T_ID:id
+        {:
+          __lista_variables.add(id);
+          SymbolTableGenerator.almacenarEnTabla(SymbolTableGenerator.Tipo.TIPO_ID,id.toString());
+        :}
+        T_COMA decvar;
+
+decvar ::= T_ID:id
+        {:
+          __lista_variables.add(id);
+          SymbolTableGenerator.almacenarEnTabla(SymbolTableGenerator.Tipo.TIPO_ID,id.toString());
+        :}
+        T_DOSP tipodato
+        {:
+          SymbolTableGenerator.actualizar_tipo_de_dato(__lista_variables,__tipo_dato_var);
+          __lista_variables.clear();
+        :};
 
 tipodato ::= T_PRINT
           {:
+            __tipo_dato_var = SymbolTableGenerator.Tipo.TIPO_INT;
             if(__logmsg){ System.out.println("t_print"); }
           :};
 
 tipodato ::= T_PRFLOAT
           {:
+            __tipo_dato_var = SymbolTableGenerator.Tipo.TIPO_FLOAT;
             if(__logmsg){ System.out.println("t_prfloat"); }
           :};
 
 tipodato ::= T_PRSTRING
           {:
+            __tipo_dato_var = SymbolTableGenerator.Tipo.TIPO_STRING;
             if(__logmsg){ System.out.println("t_prstring"); }
           :};
 

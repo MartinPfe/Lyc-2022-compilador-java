@@ -24,7 +24,7 @@ public final class Constants {
             return true;
           }
           break;
-          case TIPO_CINT:
+          case TIPO_INT:
             try {
               if (Integer.valueOf(valor) >= MIN_CINT && Integer.valueOf(valor) <= MAX_CINT) {
                 return true;
@@ -32,7 +32,7 @@ public final class Constants {
             } catch(Exception e) {
             }
           break;
-          case TIPO_CFLOAT:
+          case TIPO_FLOAT:
             try {
               if((Float.valueOf(valor) >= MIN_CFLOAT && Float.valueOf(valor) <= MAX_CFLOAT) ||
               (Float.valueOf(valor) >= -MAX_CFLOAT && Float.valueOf(valor) <= -MIN_CFLOAT)){
@@ -41,7 +41,7 @@ public final class Constants {
             } catch(Exception e) {
             }
           break;
-          case TIPO_CSTRING:
+          case TIPO_STRING:
             /* El valor recibido tiene las comillas incluidas, entonces length() retorna la longitud de la string + 2 */
             if ((valor.length() - 2) >= MIN_CSTRING && (valor.length() - 2) <= MAX_CSTRING) {
               return true;

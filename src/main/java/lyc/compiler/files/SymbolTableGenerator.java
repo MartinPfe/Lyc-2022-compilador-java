@@ -150,7 +150,9 @@ public class SymbolTableGenerator implements FileGenerator{
               System.exit(0);
         }
 
-        return simbolo.tipo.equals(str_tipo);
+        //System.out.println("\nTipo_simbolo: " + simbolo.tipo.trim() + " tipo: " + str_tipo);
+
+        return simbolo.tipo.trim().equals(str_tipo);
     }
 
     @Override

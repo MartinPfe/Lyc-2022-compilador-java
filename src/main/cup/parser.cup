@@ -17,8 +17,9 @@ action code {:
   //Variable relacionada con condiciones multiples
   private int __condmul = 0;
 
-  private String __opcmp = "";
   private String __oplog = "";
+  private String __opcmp = "";
+  private String __opcmp_opuesto = "";
 
   //Variable relacionada con el bloque de declaracion
   private boolean __declaracion = false;
@@ -170,7 +171,7 @@ asignacion ::= T_ID:id T_ASIG T_CSTRING:str
                 System.out.println("Variable `" + id + "` no declarada\nFinalizando ejecucion");
                 System.exit(0);
               }
-              if(SymbolTableGenerator.comparar_tipo(__simbolo,SymbolTableGenerator.Tipo.TIPO_STRING)){
+              if(!SymbolTableGenerator.comparar_tipo(__simbolo,SymbolTableGenerator.Tipo.TIPO_STRING)){
                 //no coincide el tipo de dato
                 System.out.println("Asignacion de tipos no compatibles\nFinalizando ejecucion");
                 System.exit(0);
@@ -404,7 +405,7 @@ tipodato ::= T_PRSTRING
 condicion ::= expresion opcomp expresion
           {:
             IntermediateCodeGenerator.insertar("CMP");
-            IntermediateCodeGenerator.insertar(__opcmp);
+            IntermediateCodeGenerator.insertar(__opcmp_opuesto);
             IntermediateCodeGenerator.apilar_y_avanzar();
             if(__logmsg){ System.out.println("condicion simple"); }
           :};
@@ -418,31 +419,37 @@ condicion ::= T_NOT
 
           {:
             IntermediateCodeGenerator.insertar("CMP");
-            IntermediateCodeGenerator.insertar(__opcmp);
+            IntermediateCodeGenerator.insertar(__opcmp_opuesto);
             IntermediateCodeGenerator.apilar_y_avanzar();
             if(__logmsg){ System.out.println("condicion negada"); }
           :};
 
-condicion ::= expresion opcomp expresion
+condicion ::= expresion opcomp expresion oplog
+
           {:
             IntermediateCodeGenerator.insertar("CMP");
-            IntermediateCodeGenerator.insertar(__opcmp);
+            if(__oplog.equals("OR")){
+                IntermediateCodeGenerator.insertar(__opcmp);
+            }
+            else{
+                IntermediateCodeGenerator.insertar(__opcmp_opuesto);
+            }
             IntermediateCodeGenerator.apilar_y_avanzar();
-          :}
-
-          oplog
-
-          {:
-            IntermediateCodeGenerator.insertar(__oplog);
+            //IntermediateCodeGenerator.insertar(__oplog);
           :}
 
           expresion opcomp expresion
 
           {:
             IntermediateCodeGenerator.insertar("CMP");
-            IntermediateCodeGenerator.insertar(__opcmp);
+            IntermediateCodeGenerator.insertar(__opcmp_opuesto);
+            if(__oplog.equals("OR")){
+                IntermediateCodeGenerator.desapilar_e_insertar(1);
+            }
+            else{
+                ++__condmul;
+            }
             IntermediateCodeGenerator.apilar_y_avanzar();
-            ++__condmul;
             if(__logmsg){ System.out.println("condicion multiple"); }
           :};
 
@@ -460,13 +467,15 @@ oplog ::= T_AND
 
 opcomp ::= T_MAYOR
         {:
-          __opcmp = "BLE";
+          __opcmp = "BGT";
+          __opcmp_opuesto = "BLE";
           if(__logmsg){ System.out.println("mayor"); }
         :};
 
 opcomp ::= T_MENOR
         {:
-          __opcmp = "BGE";
+          __opcmp = "BLT";
+          __opcmp_opuesto = "BGE";
           if(__logmsg){ System.out.println("menor"); }
         :};
 
@@ -506,6 +515,11 @@ termino ::= termino T_DIV:val factor
 
 factor ::= T_ID:val
         {:
+          //TODO: Aca deberia verificar que val este en la tabla de simbolos ?
+          if(SymbolTableGenerator.obtener_simbolo_de_tabla(val) == null){
+               System.out.println("La variable " + val + " no fue declarada\nFinalizando ejecucion");
+               System.exit(0);
+          }
           IntermediateCodeGenerator.insertar(val);
           if(__logmsg){ System.out.println("factor = id ( id: " + val + " )"); }
         :};

@@ -30,7 +30,7 @@ action code {:
   private String __figuales_exp = "__figuales_exp";
 
   //Variable relacionada con la función Repeat Inline:
-  private String __repeat_cantidad = "__repeat_cantidad";
+  private Integer __repeat_cantidad = 0;
 
   //Variables relacionadas con el bloque de declaracion
   private SymbolTableGenerator.Tipo __tipo_dato_var;
@@ -263,29 +263,20 @@ figuales ::= T_PRIGUALES
 
 frepeat ::= T_PRREPEAT T_CINT:val
         {:
-          IntermediateCodeGenerator.insertar(__repeat_cantidad);
-          IntermediateCodeGenerator.insertar(val);
-          IntermediateCodeGenerator.insertar("=");
           IntermediateCodeGenerator.apilar();
-          IntermediateCodeGenerator.insertar(__repeat_cantidad);
-          IntermediateCodeGenerator.insertar(0);
-          IntermediateCodeGenerator.insertar("CMP");
-          IntermediateCodeGenerator.insertar("BLE");
-          IntermediateCodeGenerator.apilar_y_avanzar();
+          __repeat_cantidad = Integer.valueOf(val.toString());
+        :}
+        T_CORA
+
+        codigo
+        {:
+          if(__repeat_cantidad > 0){
+              //cuantas veces quiero repetir, y desde donde
+              IntermediateCodeGenerator.repetir_codigo(__repeat_cantidad,IntermediateCodeGenerator.obtener_tope_de_pila());
+          }
         :}
 
-        T_CORA codigo T_CORC
-        {:
-          IntermediateCodeGenerator.insertar(__repeat_cantidad);
-          IntermediateCodeGenerator.insertar(1);
-          IntermediateCodeGenerator.insertar("-");
-          IntermediateCodeGenerator.insertar(__repeat_cantidad);
-          IntermediateCodeGenerator.insertar("=");
-          IntermediateCodeGenerator.insertar("BI");
-          IntermediateCodeGenerator.desapilar_e_insertar(2);
-          IntermediateCodeGenerator.insertar(IntermediateCodeGenerator.obtener_tope_de_pila() + 2);
-          if(__logmsg){ System.out.println("REPEAT"); }
-        :};
+        T_CORC;
 
 //TODO: Mirar si esto esta bien ( porque ni el lexico ni el sintactico saben el tipo de dato de una variable )
 entrada ::= T_PRREAD T_PARA T_ID:id T_PARC

@@ -57,6 +57,20 @@ public class IntermediateCodeGenerator implements FileGenerator {
         return stack.pop();
     }
 
+    //cuantas veces quiero repetir, y desde donde
+    public static void repetir_codigo(Integer cant, Integer inicio){
+        Integer longitud = polaca.size();
+        List<String> codigo = new ArrayList<String>();
+
+        for(Integer i = inicio; i < longitud; ++i){
+            codigo.add(polaca.get(i));
+        }
+
+        for(Integer i = cant - 1; i > 0; --i) {
+            polaca.addAll(codigo);
+        }
+    }
+
     @Override
     public void generate(FileWriter fileWriter) throws IOException {
         String res = "";

@@ -6,13 +6,6 @@ import java.io.IOException;
 
 public class SymbolTableGenerator implements FileGenerator{
 
-    public static class Simbolo{
-      public String nombre;
-      public String tipo;
-      public String valor;
-      public String longitud;
-    }
-
     public static enum Tipo {
       TIPO_ID,
       TIPO_INT,
@@ -20,12 +13,20 @@ public class SymbolTableGenerator implements FileGenerator{
       TIPO_STRING
     };
 
+    public static class Simbolo{
+      public String nombre;
+      public Tipo tipo;
+      public String valor;
+      public String longitud;
+    }
+
+
     //Longitud maxima de cada campo
+    private static int str_nro        = 0;
     private static int MAX_NOMBRE     = 25;
     private static int MAX_TIPO       = 10;
     private static int MAX_VALOR      = 35;
     private static int MAX_LONGITUD   = 4;
-    private static int str_nro        = 0;
     private static List<Simbolo> lista = new ArrayList<Simbolo>();
 
     /* Funcion que se encarga de almacenar el valor recibido en la lista de simbolos ( siempre y cuando el valor no se encuentre duplicado ) */
@@ -36,44 +37,36 @@ public class SymbolTableGenerator implements FileGenerator{
 
         switch(tipo){
             case TIPO_ID:
-                s.nombre    = String.format("%" + (-MAX_NOMBRE)   + "s",lexema);
-                s.tipo      = String.format("%" + (-MAX_TIPO)     + "s","");
-                s.valor     = String.format("%" + (-MAX_VALOR)    + "s","");
-                s.longitud  = String.format("%" + (-MAX_LONGITUD) + "s","");
-
-                //linea_a += String.format("%"+ (-MAX_NOMBRE) + "s|" + "%" + (-MAX_TIPO) + "s|" + "%" + (-MAX_VALOR) + "s|" + "%" + (-MAX_LONGITUD) + "s",lexema,"","", "");
+                s.nombre    = lexema;
+                s.tipo      = tipo;
+                s.valor     = "";
+                s.longitud  = "";
             break;
 
       		case TIPO_INT:
                 /* A el valor de MAX_NOMBRE necesito sacarle la longitud de _ */
-                s.nombre    = String.format("_%" + (-(MAX_NOMBRE - 1))  + "s",lexema);
-                s.tipo      = String.format("%"  + (-MAX_TIPO)          + "s","Int");
-                s.valor     = String.format("%"  + (-MAX_VALOR)         + "s",lexema);
-                s.longitud  = String.format("%"  + (-MAX_LONGITUD)      + "s",lexema.length());
-
-                //linea_a += String.format("_%"+ (-(MAX_NOMBRE - 1)) + "s|" + "%" + (-MAX_TIPO) + "s|" + "%" + (-MAX_VALOR) + "s|" + "%" + (-MAX_LONGITUD) + "s",lexema,"cint",lexema, lexema.length());
+                s.nombre    = "_" + lexema;
+                s.tipo      = tipo;
+                s.valor     = lexema;
+                s.longitud  = String.valueOf(lexema.length());
       		break;
 
       		case TIPO_FLOAT:
                 /* A el valor de MAX_NOMBRE necesito sacarle la longitud de _ */
-                s.nombre    = String.format("_%" + (-(MAX_NOMBRE - 1))  + "s",lexema);
-                s.tipo      = String.format("%"  + (-MAX_TIPO)          + "s","Float");
-                s.valor     = String.format("%"  + (-MAX_VALOR)         + "s",lexema);
-                s.longitud  = String.format("%"  + (-MAX_LONGITUD)      + "s",lexema.length());
-
-                //linea_a += String.format("_%"+ (-(MAX_NOMBRE - 1)) + "s|" + "%" + (-MAX_TIPO) + "s|" + "%" + (-MAX_VALOR) + "s|" + "%" + (-MAX_LONGITUD) + "s",lexema,"cfloat",lexema, lexema.length() );
+                s.nombre    = "_" + lexema.replace(".","_");
+                s.tipo      = tipo;
+                s.valor     = lexema;
+                s.longitud  = String.valueOf(lexema.length());
       		break;
 
       		case TIPO_STRING:
                 /* El valor recibido tiene las comillas incluidas, entonces length() retorna la longitud de la string + 2 */
                 /* A el valor de MAX_NOMBRE necesito sacarle la longitud de _str */
                 /* A el valor de lexema necesito sacarle las comillas */
-                s.nombre    = String.format("_str%" + (-(MAX_NOMBRE - 4)) + "d",str_nro);
-                s.tipo      = String.format("%"     + (-MAX_TIPO)         + "s","String");
-                s.valor     = String.format("%"     + (-MAX_VALOR)        + "s",lexema.substring(1,lexema.length() - 1));
-                s.longitud  = String.format("%"     + (-MAX_LONGITUD)     + "d",(lexema.length() - 2));
-
-                //linea_a += String.format("_str%"+ (-(MAX_NOMBRE - 4)) + "d|" + "%" + (-MAX_TIPO) + "s|" + "%" + (-MAX_VALOR) + "s|" + "%" + (-MAX_LONGITUD) + "d",str_nro,"cstring",lexema.substring(1,lexema.length() - 1),(lexema.length() - 2));
+                s.nombre    = "_str" + String.valueOf(str_nro);
+                s.tipo      = tipo;
+                s.valor     = lexema.substring(1,lexema.length() - 1);
+                s.longitud  = String.valueOf(lexema.length() - 2);
                 ++str_nro;
       		break;
 
@@ -85,7 +78,6 @@ public class SymbolTableGenerator implements FileGenerator{
 
         for(Simbolo simbolo : lista){
             if(simbolo.nombre.equals(s.nombre)){
-                //System.out.println("*****Ignorando: " + s.nombre + " " + s.tipo + " " + s.valor + " " + s.longitud);
                 return;
             }
         }
@@ -97,8 +89,7 @@ public class SymbolTableGenerator implements FileGenerator{
         String str_lexema = lexema.toString();
 
         for(Simbolo s: lista){
-
-            if(s.nombre.trim().equals(str_lexema)){
+            if(s.nombre.equals(str_lexema) || s.nombre.equals(str_lexema.replace(".","_"))){
                 return s;
             }
         }
@@ -108,19 +99,21 @@ public class SymbolTableGenerator implements FileGenerator{
     public static void actualizar_tipo_de_dato(List<Object> lista_var, Tipo tipo_var){
         boolean encontrado = false;
         for(Object o : lista_var){
+            String o_str = o.toString();
+
             for(Simbolo s: lista){
-                if(s.nombre.trim().equals(o.toString())){
+                if(s.nombre.equals(o_str)){
                     switch(tipo_var){
                         case TIPO_INT:
-                                      s.tipo = String.format("%"  + (-MAX_TIPO) + "s","Int");
+                                      s.tipo = Tipo.TIPO_INT;
                                       encontrado = true;
                         break;
                         case TIPO_FLOAT:
-                                        s.tipo = String.format("%"  + (-MAX_TIPO) + "s","Float");
+                                        s.tipo = Tipo.TIPO_FLOAT;
                                         encontrado = true;
                         break;
                         case TIPO_STRING:
-                                          s.tipo = String.format("%"     + (-MAX_TIPO) + "s","String");
+                                          s.tipo = Tipo.TIPO_STRING;
                                           encontrado = true;
                         break;
                         default:
@@ -136,23 +129,7 @@ public class SymbolTableGenerator implements FileGenerator{
     }
 
     public static boolean comparar_tipo(Simbolo simbolo, Tipo tipo){
-        String str_tipo = "";
-
-        switch(tipo){
-            case TIPO_INT: str_tipo = "Int";
-            break;
-            case TIPO_FLOAT: str_tipo = "Float";
-            break;
-            case TIPO_STRING: str_tipo = "String";
-            break;
-            default:
-              System.out.println("\nTipo de dato invalido\nFinalizando programa");
-              System.exit(0);
-        }
-
-        //System.out.println("\nTipo_simbolo: " + simbolo.tipo.trim() + " tipo: " + str_tipo);
-
-        return simbolo.tipo.trim().equals(str_tipo);
+        return simbolo.tipo == tipo;
     }
 
     @Override
@@ -163,7 +140,47 @@ public class SymbolTableGenerator implements FileGenerator{
         res += "\n";
 
         for(Simbolo s : lista){
-            res += s.nombre + "|" + s.tipo + "|" + s.valor + "|" + s.longitud;
+            switch(s.tipo){
+              case TIPO_ID:
+                    res += String.format("%" + (-MAX_NOMBRE)   + "s|",s.nombre);
+                    res += String.format("%" + (-MAX_TIPO)     + "s|","");
+                    res += String.format("%" + (-MAX_VALOR)    + "s|",s.valor);
+                    res += String.format("%" + (-MAX_LONGITUD) + "s","");
+                break;
+
+          		case TIPO_INT:
+                    /* A el valor de MAX_NOMBRE necesito sacarle la longitud de _ */
+                    res += String.format("%" + (-MAX_NOMBRE)    + "s|",s.nombre);
+                    res += String.format("%" + (-MAX_TIPO)      + "s|","Int");
+                    res += String.format("%" + (-MAX_VALOR)     + "s|",s.valor);
+                    res += String.format("%" + (-MAX_LONGITUD)  + "s",s.longitud);
+          		break;
+
+          		case TIPO_FLOAT:
+                    /* A el valor de MAX_NOMBRE necesito sacarle la longitud de _ */
+                    res += String.format("%" + (-MAX_NOMBRE)    + "s|",s.nombre);
+                    res += String.format("%" + (-MAX_TIPO)      + "s|","Float");
+                    res += String.format("%" + (-MAX_VALOR)     + "s|",s.valor);
+                    res += String.format("%" + (-MAX_LONGITUD)  + "s",s.longitud);
+          		break;
+
+          		case TIPO_STRING:
+                    /* El valor recibido tiene las comillas incluidas, entonces length() retorna la longitud de la string + 2 */
+                    /* A el valor de MAX_NOMBRE necesito sacarle la longitud de _str */
+                    /* A el valor de lexema necesito sacarle las comillas */
+                    res += String.format("%" + (-MAX_NOMBRE)    + "s|",s.nombre);
+                    res += String.format("%" + (-MAX_TIPO)      + "s|","String");
+                    res += String.format("%" + (-MAX_VALOR)     + "s|",s.valor);
+                    res += String.format("%" + (-MAX_LONGITUD)  + "s",s.longitud);
+                    ++str_nro;
+          		break;
+
+          		default:
+                    System.out.println("\nTipo de dato invalido\nFinalizando programa");
+                    System.exit(0);
+          		break;
+          	}
+
             res += "\n";
         }
 

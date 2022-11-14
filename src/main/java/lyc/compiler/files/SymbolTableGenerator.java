@@ -20,7 +20,6 @@ public class SymbolTableGenerator implements FileGenerator{
       public String longitud;
     }
 
-
     //Longitud maxima de cada campo
     private static int str_nro        = 0;
     private static int MAX_NOMBRE     = 25;
@@ -31,7 +30,7 @@ public class SymbolTableGenerator implements FileGenerator{
 
     /* Funcion que se encarga de almacenar el valor recibido en la lista de simbolos ( siempre y cuando el valor no se encuentre duplicado ) */
     /* La funcion no genera el archivo de salida, sino que almacena todos los simbolos en una lista para que despues se puedan grabar en el archivo */
-    public static void almacenarEnTabla(Tipo tipo, String lexema){
+    public static Simbolo almacenar_en_tabla(Tipo tipo, String lexema){
         /* Variable que uso para almacenar el contenido que se va a guardar en la ts */
         Simbolo s = new Simbolo();
 
@@ -78,11 +77,12 @@ public class SymbolTableGenerator implements FileGenerator{
 
         for(Simbolo simbolo : lista){
             if(simbolo.nombre.equals(s.nombre)){
-                return;
+                return simbolo;
             }
         }
 
         lista.add(s);
+        return s;
     }
 
     public static Simbolo obtener_simbolo_de_tabla(Object lexema){
@@ -130,6 +130,10 @@ public class SymbolTableGenerator implements FileGenerator{
 
     public static boolean comparar_tipo(Simbolo simbolo, Tipo tipo){
         return simbolo.tipo == tipo;
+    }
+
+    public static List<Simbolo> obtener_tabla_de_simbolos(){
+        return lista;
     }
 
     @Override

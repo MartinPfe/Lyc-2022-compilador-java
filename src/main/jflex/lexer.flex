@@ -128,7 +128,7 @@ blanco          = {LineTerminator} | {Identation}
                                                     );
                   }
 
-                  //SymbolTableGenerator.almacenarEnTabla(SymbolTableGenerator.Tipo.TIPO_ID,yytext());
+                  //SymbolTableGenerator.almacenar_en_tabla(SymbolTableGenerator.Tipo.TIPO_ID,yytext());
                   return symbol(ParserSym.T_ID, yytext());
                 }
 
@@ -143,7 +143,7 @@ blanco          = {LineTerminator} | {Identation}
                                                      );
                   }
 
-                  SymbolTableGenerator.almacenarEnTabla(SymbolTableGenerator.Tipo.TIPO_INT,yytext());
+                  //SymbolTableGenerator.almacenar_en_tabla(SymbolTableGenerator.Tipo.TIPO_INT,yytext());
                   return symbol(ParserSym.T_CINT, yytext());
                 }
 
@@ -159,7 +159,7 @@ blanco          = {LineTerminator} | {Identation}
                     System.exit(0);
                   }
 
-                  SymbolTableGenerator.almacenarEnTabla(SymbolTableGenerator.Tipo.TIPO_FLOAT,yytext());
+                  //SymbolTableGenerator.almacenar_en_tabla(SymbolTableGenerator.Tipo.TIPO_FLOAT,yytext());
                   return symbol(ParserSym.T_CFLOAT, yytext());
                 }
 
@@ -174,7 +174,7 @@ blanco          = {LineTerminator} | {Identation}
                                                     );
                   }
 
-                  SymbolTableGenerator.almacenarEnTabla(SymbolTableGenerator.Tipo.TIPO_STRING,yytext());
+                  SymbolTableGenerator.almacenar_en_tabla(SymbolTableGenerator.Tipo.TIPO_STRING,yytext());
                   return symbol(ParserSym.T_CSTRING, yytext());
                 }
 

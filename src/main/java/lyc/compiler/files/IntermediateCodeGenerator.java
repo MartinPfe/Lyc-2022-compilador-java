@@ -71,6 +71,10 @@ public class IntermediateCodeGenerator implements FileGenerator {
         }
     }
 
+    public static List<String> obtener_notacion_polaca(){
+        return polaca;
+    }
+
     @Override
     public void generate(FileWriter fileWriter) throws IOException {
         String res = "";

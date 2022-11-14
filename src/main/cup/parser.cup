@@ -2,6 +2,7 @@ package lyc.compiler;
 
 import java.util.*;
 import java_cup.runtime.*;
+import lyc.compiler.files.AsmCodeGenerator;
 import lyc.compiler.files.SymbolTableGenerator;
 import lyc.compiler.files.IntermediateCodeGenerator;
 import lyc.compiler.files.SymbolTableGenerator.Simbolo;
@@ -105,7 +106,7 @@ non terminal salida;
 
 non terminal listavar;
 non terminal listaexp;
-non terminal listasent;
+//non terminal listasent;
 non terminal decvar;
 non terminal tipodato;
 non terminal condicion;
@@ -145,7 +146,10 @@ programa ::= declaracion
             }
           :}
 
-          codigo;
+          codigo
+          {:
+            new AsmCodeGenerator().traducir_codigo_intermedio();
+          :};
 
 codigo ::= sentencia;
 codigo ::= codigo sentencia;
@@ -178,8 +182,8 @@ asignacion ::= T_ID:id T_ASIG T_CSTRING:str
               }
 
               IntermediateCodeGenerator.insertar(str);
-              IntermediateCodeGenerator.insertar(id);
               IntermediateCodeGenerator.insertar("=");
+              IntermediateCodeGenerator.insertar(id);
               if(__logmsg){ System.out.println("asignacion id - cstring"); }
             :};
 
@@ -192,8 +196,8 @@ asignacion ::= T_ID:id T_ASIG expresion
                 System.exit(0);
               }
 
-              IntermediateCodeGenerator.insertar(id);
               IntermediateCodeGenerator.insertar("=");
+              IntermediateCodeGenerator.insertar(id);
               if(__logmsg){ System.out.println("asignacion id - expresion"); }
             :};
 
@@ -360,14 +364,14 @@ listaexp ::= listaexp T_COMA expresion
 decvar ::= T_ID:id
         {:
           __lista_variables.add(id);
-          SymbolTableGenerator.almacenarEnTabla(SymbolTableGenerator.Tipo.TIPO_ID,id.toString());
+          SymbolTableGenerator.almacenar_en_tabla(SymbolTableGenerator.Tipo.TIPO_ID,id.toString());
         :}
         T_COMA decvar;
 
 decvar ::= T_ID:id
         {:
           __lista_variables.add(id);
-          SymbolTableGenerator.almacenarEnTabla(SymbolTableGenerator.Tipo.TIPO_ID,id.toString());
+          SymbolTableGenerator.almacenar_en_tabla(SymbolTableGenerator.Tipo.TIPO_ID,id.toString());
         :}
         T_DOSP tipodato
         {:
@@ -517,13 +521,15 @@ factor ::= T_ID:val
 
 factor ::= T_CINT:val
         {:
-          IntermediateCodeGenerator.insertar(val);
+          Simbolo s = SymbolTableGenerator.almacenar_en_tabla(SymbolTableGenerator.Tipo.TIPO_INT,val.toString());
+          IntermediateCodeGenerator.insertar(s.nombre);
           if(__logmsg){ System.out.println("factor = cint ( cint: " + val + " )"); }
         :};
 
 factor ::= T_CFLOAT:val
         {:
-          IntermediateCodeGenerator.insertar(val);
+          Simbolo s = SymbolTableGenerator.almacenar_en_tabla(SymbolTableGenerator.Tipo.TIPO_FLOAT,val.toString());
+          IntermediateCodeGenerator.insertar(s.nombre);
           if(__logmsg){ System.out.println("factor = cfloat ( cfloat: " + val + " )"); }
         :};
 

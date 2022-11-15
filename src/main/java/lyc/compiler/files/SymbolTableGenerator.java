@@ -7,6 +7,7 @@ import java.io.IOException;
 public class SymbolTableGenerator implements FileGenerator{
 
     public static enum Tipo {
+      TIPO_X, //indica que no tiene tipo asignado
       TIPO_ID,
       TIPO_INT,
       TIPO_FLOAT,

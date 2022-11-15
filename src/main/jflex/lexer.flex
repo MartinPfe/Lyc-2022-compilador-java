@@ -174,7 +174,7 @@ blanco          = {LineTerminator} | {Identation}
                                                     );
                   }
 
-                  SymbolTableGenerator.almacenar_en_tabla(SymbolTableGenerator.Tipo.TIPO_STRING,yytext());
+                  //SymbolTableGenerator.almacenar_en_tabla(SymbolTableGenerator.Tipo.TIPO_STRING,yytext());
                   return symbol(ParserSym.T_CSTRING, yytext());
                 }
 

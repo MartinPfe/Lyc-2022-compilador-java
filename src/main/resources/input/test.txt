@@ -12,10 +12,25 @@ init {
 
 /* ------------------------Asignacion------------------------ */
 
-a1 = 3.14
-a = b - c
-p1 = "Hola mundo"
-
-if(not a < a){
+while(a > 1){
+if(a<v&a>f){
+  if(a < b){
   write("Funciona")
+  if(a < b){
+  write("Funciona")
+  }
+  if(x > y ){
+  write("xy")
+  }
+  }
+}
+}
+
+p1 = "hola"
+
+if(a<v||a>f){
+  if(a<v&a>f){
+    write("")
+  }
+  write("")
 }

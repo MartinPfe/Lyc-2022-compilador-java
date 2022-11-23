@@ -75,8 +75,54 @@ public class IntermediateCodeGenerator implements FileGenerator {
         return polaca;
     }
 
+    private void insertar_etiquetas(){
+        String etiqueta_str;
+        String linea = "";
+        Integer etiqueta;
+        Integer modificar = 1;
+        Integer tam_polaca = polaca.size();
+
+        for(Integer i = 0;i < tam_polaca; ++i){
+            try {
+                etiqueta = Integer.parseInt(polaca.get(i));
+                etiqueta_str = "__etiqueta_" + etiqueta + ":";
+
+                if(etiqueta == tam_polaca){
+                    polaca.add(etiqueta_str);
+                }
+                else if(!polaca.get(etiqueta).startsWith(etiqueta_str)){
+                    polaca.set(etiqueta,etiqueta_str + " " + polaca.get(etiqueta));
+                }
+                polaca.set(i,"__etiqueta_" + etiqueta);
+            } catch(Exception e) {
+              //nada
+            }
+        }
+
+        while(modificar != 0){
+            --modificar;
+            tam_polaca = polaca.size();
+            for(Integer i  = 0; i < tam_polaca; ++i){
+                linea = polaca.get(i);
+
+                if(linea.startsWith("__etiqueta_")){
+                    if(linea.contains(":")){
+                        if(linea.indexOf(":") != (linea.length() - 1)){
+                            String valores[] = linea.split(" ");
+                            polaca.set(i,valores[0]);
+                            polaca.add(i + 1,valores[1]);
+                            ++modificar;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     @Override
     public void generate(FileWriter fileWriter) throws IOException {
+        insertar_etiquetas();
+
         String res = "";
 
         if(__logmsg){

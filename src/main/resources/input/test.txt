@@ -6,31 +6,372 @@ init {
     j1, j2, j3 : String
     p1, p2, p3, numvar, var1, var2 : String
     /* redeclaro variables */
-    /* a : Int */
     /* a1, b1 : String */
 }
 
 /* ------------------------Asignacion------------------------ */
 
-while(a > 1){
-if(a<v&a>f){
-  if(a < b){
-  write("Funciona")
-  if(a < b){
-  write("Funciona")
-  }
-  if(x > y ){
-  write("xy")
-  }
-  }
-}
+write("--Asignacion--")
+variable1 = 1
+variable1 = 123
+variable2 = variable1
+variable1 = 333
+variable1 = -333
+
+a1 = .1
+a1 = 1.05
+a1 = 19.
+a1 = -.9
+a1 = -1.1
+b1 = a1
+
+/*p1 = "texto"*/
+/*p1 = ""*/
+/*p2 = p1*/
+
+/* ------------------------Comentario------------------------ */
+
+write("--Comentario--")
+/**/
+/* */
+/* comentario */
+/* <>#$_°|* */
+/* "string dentro de comentario " */
+/* Esto es un comentario */
+/*123abc456*/
+
+/* ------------------------Iteracion------------------------ */
+
+write("---Iteracion---")
+a = 0
+b = 1
+
+while(a>b){ write("a > b")}
+
+e = 1
+while(5>e){
+  write("5 > e")
+  e = 10
 }
 
-p1 = "hola"
-
-if(a<v||a>f){
-  if(a<v&a>f){
-    write("")
-  }
-  write("")
+while (a < b){
+  write("a < b")
+  x = 10
+  y = x + 1
+  a = a + 1
 }
+
+a = 0
+while (a < (1+4)){
+  write("a < (1+4)")
+  a = a + 1
+}
+
+/* ------------------------Iteracion anidada------------------------ */
+
+write("---Iteracion anidada---")
+a = 0
+b = 3
+c = 4
+
+while (a < b){
+  write("a < b")
+ while (c > b){
+  write("c > b")
+   while (a < c){
+    write("a < c")
+    a = a + 1
+   }
+   c = b
+ }
+ a = b
+}
+
+a = 10
+b = 4
+
+while ((2+1) < b){
+  write("(2+1) < b")
+ while (5 > b){
+  write("5 > b")
+   while (a < (7- 1)){
+    write("a < (7- 1)")
+   }
+   b = 5
+ }
+ b = 0
+}
+
+/*------------------------Expresion------------------------*/
+
+write("---Expresion---")
+
+d = 1
+e = 25
+
+c=d*(e- 21)/4
+
+write(c)
+
+b = 1
+j = 20
+
+a = b + c * ( j + -15) / 2 + 3
+
+write(a)
+
+/*------------------------Entrada------------------------*/
+
+write("---Entrada---")
+
+read(var1)
+read ( var2 )
+
+/*------------------------Salida------------------------*/
+
+write("---Salida---")
+
+a = 15
+
+write("String")
+write(a)
+write("")
+
+/* ------------------------Seleccion------------------------ */
+
+write("--Seleccion--")
+a = 0
+b = 11
+
+if (a < b){ write("a < b") }
+
+if (a < 10){ write("a < 10") }
+
+if (10 < b){ write("10 < b") }
+
+/* ------------------------Seleccion anidada------------------------ */
+
+write("--Seleccion anidada--")
+
+a = 5
+b = 2
+c = 1
+
+if (a > b){
+  write("a > b")
+ if (a > c)   {
+  write("a > c")
+   if (c < 3){
+    write("c < 3")
+   }
+ }
+}
+
+a = 0
+
+if (a > 10){
+  write("a > 10")
+  x = y
+ if (5 > c)   {
+  write("5 > c")
+    j = z
+   if (c < 0){
+    write("c < 0")
+    p = 0
+   }
+ }
+}
+
+a = 60
+x = 2 + 3
+y = 5 * 9 + 1
+
+if (x < y){
+  write("x < y")
+ if (a > 55)   {
+  write("a > 55")
+   if (10 < a){
+    write("10 < a")
+   }
+ }
+}
+
+/* ------------------------Seleccion multiple------------------------ */
+
+write("---Seleccion multiple---")
+
+a = 0
+b = 1
+c = 4
+d = 3
+z = 15
+
+if(a < b & c > d){ write("a < b & c > d")}
+
+if(1 < b & c > 15){write("1 < b & c > 15")}
+
+if(a > 0 || b < z){write("a > 0 || b < z")}
+
+if(99 > a || b < 44){write("99 > a || b < 44")}
+
+/* ------------------------Seleccion multiple anidada------------------------ */
+
+write("---Seleccion multiple anidada---")
+
+a = 10
+f = 5
+b = 20
+z = 1
+
+
+if(a > f || b < z){
+  write("a > f || b < z")
+  x = 11
+  c = x - 1 + 10 - 20
+  h = 1
+  d = 2
+  j = 21
+if(h < d & c > j){
+  write("h < d & c > j")
+  w = 150
+}
+y = 55
+}
+
+/* ------------------------Seleccion negada------------------------ */
+
+write("---Seleccion negada---")
+
+a = 1 + 2 + 3 + 4 + 5 * 2
+b = a + 1
+
+if (not a > b)
+{
+  write("not a > b")
+}
+
+z = 5
+
+if (not (35+1) > z)
+{
+  write("not (35+1) > z")
+}
+
+/* ------------------------Seleccion con else------------------------ */
+
+write("---Seleccion con else---")
+
+a = 50
+b = 0
+
+if(a < b){
+  write("a < b")
+}
+else{
+  write("a >= b")
+}
+
+/*------------------------Temas especiales------------------------*/
+
+write("---Temas especiales---")
+
+a = 1
+w = 4
+b = 2
+d = 6
+e = 4
+f = 3
+
+#Iguales ( a+w/b, [(d- 3)*1,e,f] )
+
+x = 0
+y = 1
+
+#Iguales ( a+w/b, [(d- 3)*2,a + e / 99, 33 - 77 * ( x + y ), 1, 2, 99] )
+
+REPEAT 3 [a = 0]
+REPEAT 2 [  a = 10
+            b = a + 5 * 10
+            write(a)
+            write(b)
+            write("abc")]
+
+/*------------------------Casos de error------------------------*/
+
+/* Constante string sin las comillas que cierran */
+/*"Hola, mundo!*/
+
+/* Constante string fuera de rango */
+/*"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"*/
+
+/* Constante entera fuera de rango */
+/*a = 999999*/
+/*a = -999999*/
+
+/* Constante float fuera de rango */
+/*a = 999999999999999999999.9*/
+
+/* Seleccion a la que le falta un parentesis */
+/*if (a > b {}*/
+
+/*if a < b){}*/
+
+/* Seleccion a la que le falta una llave */
+/*if(a > b){*/
+
+/*if(a > b) }*/
+
+/* Seleccion con una condicion no valida */
+/*if(if(a>b)){}*/
+
+/*if (not a > b || a < c){}*/
+
+/* Seleccion con una condicion vacia */
+/*if(){}*/
+
+/* Iteracion con una condicion vacia */
+/*while(){}*/
+
+/* Iteracion con una condicion no valida */
+/*while(123){}*/
+
+/* Iteracion a la que le falta una llave */
+/*while(a < b){*/
+
+/* Id fuera del rango permitido */
+/*aaaaaaaaaaaaaaaaaaa = 10*/
+
+/* Funcion #Iguales que no tiene el primer parametro */
+/*#Iguales ( , [(d- 3)*2,e,f] )*/
+
+/* Funcion #Iguales con el segundo parametro mal formado */
+/*#Iguales ( a+w/b, [(d- 3)*2,e,f )*/
+
+/* Funcion Repeat Inline que le falta el primer parametro */
+/*REPEAT [a = 0]*/
+
+/* Funcion Repeat Inline sin el segundo parametro */
+/*REPEAT 10 []*/
+
+/* Entrada con parametro erroneo */
+/*read(123)*/
+/*read(3.14)*/
+/*read("cadena")*/
+/*read(while(a>b){})*/
+/*read()*/
+
+/* Salida con parametro erroneo */
+/*write()*/
+/*write(REPEAT 10 [a=0])*/
+/*write(a+b)*/
+/*write(if(a<v){})*/
+
+/* Comentario sin cerrar */
+/* /* Comentario */
+
+/* Asignacion de datos string en variables int o float */
+/* variable1 = "hola" */
+/* a1 = "HOLA" */
+
+/* Utilizo una variable no declarada */
+/*noDec = 5 + 5 + 10 * 30 / 42 - 3.14*/

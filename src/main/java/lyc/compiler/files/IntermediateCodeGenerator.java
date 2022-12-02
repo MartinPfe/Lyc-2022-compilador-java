@@ -7,7 +7,6 @@ import java.io.IOException;
 public class IntermediateCodeGenerator implements FileGenerator {
 
     private static boolean __logmsg = false;
-
     private static Integer celda_actual = 0;
     private static Stack<Integer> stack = new Stack<>();
     private static List<String> polaca = new ArrayList<String>();
@@ -62,6 +61,8 @@ public class IntermediateCodeGenerator implements FileGenerator {
         Integer longitud = polaca.size();
         List<String> codigo = new ArrayList<String>();
 
+        codigo.add("\n");
+
         for(Integer i = inicio; i < longitud; ++i){
             codigo.add(polaca.get(i));
         }
@@ -75,7 +76,7 @@ public class IntermediateCodeGenerator implements FileGenerator {
         return polaca;
     }
 
-    private void insertar_etiquetas(){
+    public static void insertar_etiquetas(){
         String etiqueta_str;
         String linea = "";
         Integer etiqueta;
@@ -86,14 +87,17 @@ public class IntermediateCodeGenerator implements FileGenerator {
             try {
                 etiqueta = Integer.parseInt(polaca.get(i));
                 etiqueta_str = "__etiqueta_" + etiqueta + ":";
-
-                if(etiqueta == tam_polaca){
+                //System.out.println("Etiqueta encontrada: " + etiqueta + " tam_polaca: " + tam_polaca + " " + polaca.get(polaca.size() - 1).equals(etiqueta_str));
+                if(etiqueta.compareTo(tam_polaca) == 0 && !polaca.get(polaca.size() - 1).equals(etiqueta_str)){
                     polaca.add(etiqueta_str);
+                    //System.out.println("Polaca.add " + etiqueta_str + " at: " + polaca.get(polaca.size() - 1));
                 }
                 else if(!polaca.get(etiqueta).startsWith(etiqueta_str)){
                     polaca.set(etiqueta,etiqueta_str + " " + polaca.get(etiqueta));
+                    //System.out.println("Polaca.set " + etiqueta + " " + etiqueta_str + " " + polaca.get(etiqueta));
                 }
                 polaca.set(i,"__etiqueta_" + etiqueta);
+                //System.out.println("--> " + i + "__etiqueta_" + etiqueta);
             } catch(Exception e) {
               //nada
             }
@@ -117,12 +121,11 @@ public class IntermediateCodeGenerator implements FileGenerator {
                 }
             }
         }
+
     }
 
     @Override
     public void generate(FileWriter fileWriter) throws IOException {
-        insertar_etiquetas();
-
         String res = "";
 
         if(__logmsg){

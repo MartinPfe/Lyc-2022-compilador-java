@@ -15,6 +15,10 @@ public class AsmCodeGenerator implements FileGenerator {
       private static String aux_mul = "__aux_mul"; //aux que uso para almacenar resultados de operaciones aritmeticas de multiplicacion
       private static String aux_dec_int = "0";     //aux que uso para indicar la cantidad de decimales de las variables de tipo int
       private static String aux_dec_float = "3";   //aux que uso para indicar la cantidad de decimales de las variables de tipo float
+      private static String aux_uno = "__aux_uno"; //variable que uso para representar 1
+      private static String aux_figuales_pivot = "__figuales_pivot";
+      private static String aux_figuales_cont = "__figuales_cont";
+      private static String aux_figuales_exp = "__figuales_exp";
 
       private String cabecera = "include macros.asm\n"  +
                                 "include number.asm\n"  +
@@ -27,6 +31,10 @@ public class AsmCodeGenerator implements FileGenerator {
                                     "\n" + aux_res + " dd ?" +
                                     "\n" + aux_mul + " dd ?" +
                                     "\n" + aux_div + " dd ?" +
+                                    "\n" + aux_uno + " dd 1.0" +
+                                    "\n" + aux_figuales_pivot + " dd ?" +
+                                    "\n" + aux_figuales_cont + " dd ?" +
+                                    "\n" + aux_figuales_exp + " dd ?" +
                                     "\n";
 
       private static String codigo =  "\n.CODE\n"       +
@@ -71,6 +79,7 @@ public class AsmCodeGenerator implements FileGenerator {
       public void traducir_codigo_intermedio(){
           traducir_tabla_de_simbolos();
 
+          boolean cmp = false;
           boolean asig = false;
           boolean read = false;
           boolean write = false;
@@ -78,11 +87,12 @@ public class AsmCodeGenerator implements FileGenerator {
           Stack<String> stack = new Stack<>();
 
           if(__logmsg){
-              System.out.println(polaca);
               System.out.println("*****************");
+              //System.out.println(polaca);
           }
 
           for(String s: polaca){
+              //System.out.println("Valor: " + s);
               switch(s){
                   case "=":
                       asig = true;
@@ -147,23 +157,111 @@ public class AsmCodeGenerator implements FileGenerator {
                       stack.push(aux_div);
                   break;
 
+                  case "CMP":
+                      if(__logmsg){
+                          System.out.println("cmp");
+                          System.out.println("*****************");
+                      }
+
+                      codigo += "\nfld " + stack.pop();
+                      codigo += "\nfld " + stack.pop();
+                      codigo += "\nfcom";
+                      codigo += "\nfstsw ax";
+                      codigo += "\nsahf";
+                      cmp = true;
+                  break;
+
+                  case "BI":
+                      if(__logmsg){
+                          System.out.println("bi");
+                          System.out.println("*****************");
+                      }
+                      codigo += "\njmp ";
+                  break;
+
                   case "READ":
+                      if(__logmsg){
+                          System.out.println("read");
+                          System.out.println("*****************");
+                      }
                       read = true;
                   break;
 
                   case "WRITE":
+                      if(__logmsg){
+                          System.out.println("write");
+                          System.out.println("*****************");
+                      }
                       write = true;
                   break;
 
+                  case "WHILE":
+                      if(__logmsg){
+                          System.out.println("while");
+                          System.out.println("*****************");
+                      }
+                      //dummy
+                  break;
+
+                  case "INC_+1":
+                      //codigo += "\nfld " + aux_uno;
+                      stack.push(aux_uno);
+                  break;
+
+                  case "NOT":
+                      //dummy
+                  break;
+
                   default:
-                      //deberia verificar que tipo de asignacion es, cint, cfloat, cstring ??
-                      if(asig){
-                          codigo += "\nfld " + stack.pop();
-                          codigo += "\nfstp " + s;
-                          asig = false;
+                      if(cmp){
+                          //System.out.println(s);
+                          if(s.equals("BLE")){
+                              codigo += "\njna ";
+                          }
+                          else if(s.equals("BGT")){
+                              codigo += "\nja ";
+                          }
+                          else if(s.equals("BGE")){
+                              codigo += "\njae ";
+                          }
+                          else if(s.equals("BLT")){
+                              codigo += "\njb ";
+                          }
+                          else if(s.equals("BNE")){
+                              codigo += "\njne ";
+                          }
+                          cmp = false;
                           continue;
                       }
+                      if(s.startsWith("__etiqueta")){
+                          if(__logmsg){
+                              System.out.println("etiqueta");
+                              System.out.println("*****************");
+                          }
+                          if(s.contains(":")){
+                              codigo += "\n" + s;
+                              continue;
+                          }
+                          codigo += s;
+                          continue;
+                      }
+                      if(asig){
+                          String val = stack.pop();
+                          Simbolo simbolo = SymbolTableGenerator.obtener_simbolo_de_tabla(val);
+                          if(simbolo != null && (val.startsWith("_str") || simbolo.tipo == SymbolTableGenerator.Tipo.TIPO_STRING)){
+                              codigo += "STRCPY " + s + "," + val;
+                              asig = false;
+                              continue;
+                          }
+                          else{
+                              codigo += "\nfld " + val;
+                              codigo += "\nfstp " + s;
+                              asig = false;
+                              continue;
+                          }
+                      }
                       if(read){
+                        codigo += "\ngetString " + s;
                         read = false;
                         continue;
                       }
@@ -182,7 +280,7 @@ public class AsmCodeGenerator implements FileGenerator {
                           else if(simbolo.tipo == SymbolTableGenerator.Tipo.TIPO_FLOAT){
                               codigo += "\nDisplayFloat " + s + "," + aux_dec_float;
                           }
-                          codigo += "\nnewline";
+                          codigo += "\nnewLine\n";
                           write = false;
                           continue;
                       }

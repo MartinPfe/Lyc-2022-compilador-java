@@ -28,6 +28,7 @@ action code {:
   private boolean __declaracion = false;
 
   //Variables relacionadas con la funcion figuales
+  private int __cant_expr = 1;
   private String __figuales_pivot = "__figuales_pivot";
   private String __figuales_cont = "__figuales_cont";
   private String __figuales_exp = "__figuales_exp";
@@ -171,6 +172,7 @@ programa ::= declaracion
           codigo
 
           {:
+            IntermediateCodeGenerator.insertar_etiquetas();
             new AsmCodeGenerator().traducir_codigo_intermedio();
           :};
 
@@ -259,8 +261,8 @@ seleccion ::= T_PRIF T_PARA condicion T_PARC T_LLAVA programa T_LLAVC
 
 iteracion ::= T_PRWHILE
           {:
-            IntermediateCodeGenerator.apilar();
             IntermediateCodeGenerator.insertar("WHILE");
+            IntermediateCodeGenerator.apilar();
             ++__nloops;
           :}
 
@@ -274,21 +276,19 @@ iteracion ::= T_PRWHILE
             if(__logmsg){ System.out.println("iteracion"); }
           :};
 
-figuales ::= T_PRIGUALES
+figuales ::= T_PRIGUALES T_PARA expresion
           {:
-            IntermediateCodeGenerator.insertar("FIGUALES");
-          :}
-
-          T_PARA expresion
-
-          {:
-            IntermediateCodeGenerator.insertar(__figuales_pivot);
             IntermediateCodeGenerator.insertar("=");
+            IntermediateCodeGenerator.insertar(__figuales_pivot);
           :}
 
           T_COMA T_CORA listaexp T_CORC T_PARC
 
           {:
+            while(__cant_expr > 1){
+                IntermediateCodeGenerator.desapilar_e_insertar(0);
+                --__cant_expr;
+            }
             if(__logmsg){ System.out.println("#Iguales"); }
           :};
 
@@ -353,36 +353,38 @@ listavar ::= listavar decvar;
 //lista de expresiones
 listaexp ::= expresion
           {:
-            IntermediateCodeGenerator.insertar(__figuales_exp);
             IntermediateCodeGenerator.insertar("=");
+            IntermediateCodeGenerator.insertar(__figuales_exp);
             IntermediateCodeGenerator.insertar(__figuales_pivot);
             IntermediateCodeGenerator.insertar(__figuales_exp);
             IntermediateCodeGenerator.insertar("CMP");
             IntermediateCodeGenerator.insertar("BNE");
             IntermediateCodeGenerator.apilar_y_avanzar();
-            IntermediateCodeGenerator.insertar(1);
+            IntermediateCodeGenerator.insertar("INC_+1");
             IntermediateCodeGenerator.insertar(__figuales_cont);
             IntermediateCodeGenerator.insertar("+");
-            IntermediateCodeGenerator.insertar(__figuales_cont);
             IntermediateCodeGenerator.insertar("=");
-            IntermediateCodeGenerator.desapilar_e_insertar(0);
+            IntermediateCodeGenerator.insertar(__figuales_cont);
+            //IntermediateCodeGenerator.desapilar_e_insertar(0);
+            ++__cant_expr;
           :};
 
 listaexp ::= listaexp T_COMA expresion
           {:
-            IntermediateCodeGenerator.insertar(__figuales_exp);
             IntermediateCodeGenerator.insertar("=");
+            IntermediateCodeGenerator.insertar(__figuales_exp);
             IntermediateCodeGenerator.insertar(__figuales_pivot);
             IntermediateCodeGenerator.insertar(__figuales_exp);
             IntermediateCodeGenerator.insertar("CMP");
             IntermediateCodeGenerator.insertar("BNE");
             IntermediateCodeGenerator.apilar_y_avanzar();
-            IntermediateCodeGenerator.insertar(1);
+            IntermediateCodeGenerator.insertar("INC_+1");
             IntermediateCodeGenerator.insertar(__figuales_cont);
             IntermediateCodeGenerator.insertar("+");
-            IntermediateCodeGenerator.insertar(__figuales_cont);
             IntermediateCodeGenerator.insertar("=");
-            IntermediateCodeGenerator.desapilar_e_insertar(0);
+            IntermediateCodeGenerator.insertar(__figuales_cont);
+            //IntermediateCodeGenerator.desapilar_e_insertar(0);
+            ++__cant_expr;
           :};
 
 //lista de sentencias
@@ -467,7 +469,7 @@ condicion ::= T_NOT contenido
           {:
             IntermediateCodeGenerator.insertar("NOT");
             IntermediateCodeGenerator.insertar("CMP");
-            IntermediateCodeGenerator.insertar(__opcmp_opuesto);
+            IntermediateCodeGenerator.insertar(__opcmp);
             IntermediateCodeGenerator.apilar_y_avanzar();
             if(__logmsg){ System.out.println("condicion negada"); }
           :};

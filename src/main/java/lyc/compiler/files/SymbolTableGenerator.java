@@ -45,7 +45,7 @@ public class SymbolTableGenerator implements FileGenerator{
 
       		case TIPO_INT:
                 /* A el valor de MAX_NOMBRE necesito sacarle la longitud de _ */
-                s.nombre    = "_" + lexema;
+                s.nombre    = "_" + lexema.replace("-","_");
                 s.tipo      = tipo;
                 s.valor     = lexema;
                 s.longitud  = String.valueOf(lexema.length());
@@ -53,7 +53,9 @@ public class SymbolTableGenerator implements FileGenerator{
 
       		case TIPO_FLOAT:
                 /* A el valor de MAX_NOMBRE necesito sacarle la longitud de _ */
-                s.nombre    = "_" + lexema.replace(".","_");
+                String val = lexema.replace(".","_");
+                val = val.replace("-","_");
+                s.nombre    = "_" + val;
                 s.tipo      = tipo;
                 s.valor     = lexema;
                 s.longitud  = String.valueOf(lexema.length());
@@ -88,9 +90,11 @@ public class SymbolTableGenerator implements FileGenerator{
 
     public static Simbolo obtener_simbolo_de_tabla(Object lexema){
         String str_lexema = lexema.toString();
+        String val = str_lexema.replace(".","_");
+        val = val.replace("-","_");
 
         for(Simbolo s: lista){
-            if(s.nombre.equals(str_lexema) || s.nombre.equals(str_lexema.replace(".","_"))){
+            if(s.nombre.equals(str_lexema) || s.nombre.equals(val)){
                 return s;
             }
         }
